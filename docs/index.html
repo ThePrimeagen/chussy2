@@ -1,7 +1,23 @@
+<!DOCTYPE html>
 <html>
-    <head>
-    </head>
-    <body>
-        Hello World
-    </body>
+<head>
+    <meta charset="utf-8">
+    <title>3D Doom-inspired Shooter</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+    <script>
+        // Auto-refresh for GitHub Pages
+        if (window.location.hostname.includes('github.io')) {
+            const refresh = () => window.location.reload();
+            setInterval(refresh, 30000); // Refresh every 30 seconds
+        }
+    </script>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="game.js"></script>
+</body>
 </html>
