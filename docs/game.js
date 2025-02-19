@@ -4,9 +4,12 @@ const state = {
         x: 400,
         y: 300,
         angle: 0,
-        speed: 5,
-        turnSpeed: 0.1,
-        moveSpeed: 5,
+        velocity: { x: 0, y: 0 },
+        acceleration: 0.5,
+        friction: 0.85,
+        maxSpeed: 8,
+        sprintMultiplier: 1.6,
+        turnSpeed: 0.08,
         sprite: new Image()
     },
     keys: {
@@ -15,7 +18,8 @@ const state = {
         turnLeft: false,
         turnRight: false,
         strafeLeft: false,
-        strafeRight: false
+        strafeRight: false,
+        sprint: false
     }
 };
 
@@ -46,37 +50,71 @@ function spawnCoin() {
 }
 
 function updateGame() {
-    // Update player rotation
+    // Update player rotation with smooth turning
     if (state.keys.turnLeft) state.player.angle -= state.player.turnSpeed;
     if (state.keys.turnRight) state.player.angle += state.player.turnSpeed;
 
-    // Calculate movement vector
+    // Calculate movement vectors
     const dx = Math.cos(state.player.angle);
     const dy = Math.sin(state.player.angle);
+    
+    // Get current speed multiplier
+    const speedMultiplier = state.keys.sprint ? state.player.sprintMultiplier : 1;
 
-    // Forward/backward movement
+    // Calculate acceleration vector
+    let accelX = 0;
+    let accelY = 0;
+
     if (state.keys.forward) {
-        state.player.x += dx * state.player.moveSpeed;
-        state.player.y += dy * state.player.moveSpeed;
+        accelX += dx * state.player.acceleration;
+        accelY += dy * state.player.acceleration;
     }
     if (state.keys.backward) {
-        state.player.x -= dx * state.player.moveSpeed;
-        state.player.y -= dy * state.player.moveSpeed;
+        accelX -= dx * state.player.acceleration * 0.7; // Slower backward movement
+        accelY -= dy * state.player.acceleration * 0.7;
     }
-
-    // Strafe movement
     if (state.keys.strafeLeft) {
-        state.player.x += dy * state.player.moveSpeed;
-        state.player.y -= dx * state.player.moveSpeed;
+        accelX += dy * state.player.acceleration;
+        accelY -= dx * state.player.acceleration;
     }
     if (state.keys.strafeRight) {
-        state.player.x -= dy * state.player.moveSpeed;
-        state.player.y += dx * state.player.moveSpeed;
+        accelX -= dy * state.player.acceleration;
+        accelY += dx * state.player.acceleration;
     }
 
-    // Keep player in bounds
-    state.player.x = Math.max(0, Math.min(canvas.width, state.player.x));
-    state.player.y = Math.max(0, Math.min(canvas.height, state.player.y));
+    // Apply acceleration
+    state.player.velocity.x += accelX;
+    state.player.velocity.y += accelY;
+
+    // Apply friction
+    state.player.velocity.x *= state.player.friction;
+    state.player.velocity.y *= state.player.friction;
+
+    // Limit speed
+    const currentSpeed = Math.sqrt(
+        state.player.velocity.x * state.player.velocity.x + 
+        state.player.velocity.y * state.player.velocity.y
+    );
+    
+    if (currentSpeed > state.player.maxSpeed * speedMultiplier) {
+        const scale = (state.player.maxSpeed * speedMultiplier) / currentSpeed;
+        state.player.velocity.x *= scale;
+        state.player.velocity.y *= scale;
+    }
+
+    // Update position
+    state.player.x += state.player.velocity.x;
+    state.player.y += state.player.velocity.y;
+
+    // Keep player in bounds with momentum preservation
+    if (state.player.x < 0 || state.player.x > canvas.width) {
+        state.player.velocity.x *= -0.5; // Bounce with reduced momentum
+        state.player.x = Math.max(0, Math.min(canvas.width, state.player.x));
+    }
+    if (state.player.y < 0 || state.player.y > canvas.height) {
+        state.player.velocity.y *= -0.5; // Bounce with reduced momentum
+        state.player.y = Math.max(0, Math.min(canvas.height, state.player.y));
+    }
 }
 
 function drawGame() {
@@ -117,7 +155,9 @@ window.addEventListener('keydown', e => {
         case 'd': state.keys.strafeRight = true; break;
         case 'ArrowLeft': state.keys.turnLeft = true; break;
         case 'ArrowRight': state.keys.turnRight = true; break;
+        case 'Shift': state.keys.sprint = true; break;
     }
+    e.preventDefault(); // Prevent default browser scrolling
 });
 
 window.addEventListener('keyup', e => {
@@ -128,6 +168,7 @@ window.addEventListener('keyup', e => {
         case 'd': state.keys.strafeRight = false; break;
         case 'ArrowLeft': state.keys.turnLeft = false; break;
         case 'ArrowRight': state.keys.turnRight = false; break;
+        case 'Shift': state.keys.sprint = false; break;
     }
 });
 
