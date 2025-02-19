@@ -38,6 +38,7 @@ const CHEESE_SPRITE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAY
 state.player.sprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGUlEQVQYV2NkYGD4z4AHMP7//x8/BYyjAQCmBQYNBzg8PQAAAABJRU5ErkJggg==';
 
 function spawnEnemy() {
+    if (!state.enemies) state.enemies = [];
     const edge = Math.floor(Math.random() * 4);
     let x, y;
     switch(edge) {
@@ -58,6 +59,7 @@ function spawnEnemy() {
 }
 
 function spawnCoin() {
+    if (!state.coins) state.coins = [];
     state.coins.push({
         x: Math.random() * (canvas.width - 20),
         y: Math.random() * (canvas.height - 20)
@@ -139,21 +141,30 @@ function drawGame() {
     // Draw player
     ctx.drawImage(state.player.sprite, state.player.x - 16, state.player.y - 16);
 
-    // Draw enemies
-    ctx.fillStyle = '#f00';
-    state.enemies.forEach(enemy => {
-        ctx.beginPath();
-        ctx.arc(enemy.x, enemy.y, 16, 0, Math.PI * 2);
-        ctx.fill();
-    });
+    // Draw enemies with RGB shadows
+    if (state.enemies) {
+        state.enemies.forEach(enemy => {
+            const shadowColor = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
+            ctx.shadowColor = shadowColor;
+            ctx.shadowBlur = 70;
+            ctx.drawImage(enemy.sprite, enemy.x - 32, enemy.y - 32, 64, 64);
+            ctx.shadowBlur = 0;
+        });
+    }
 
-    // Draw coins
-    ctx.fillStyle = '#ff0';
-    state.coins.forEach(coin => {
-        ctx.beginPath();
-        ctx.arc(coin.x, coin.y, 8, 0, Math.PI * 2);
-        ctx.fill();
-    });
+    // Draw coins with RGB shadows
+    if (state.coins) {
+        ctx.fillStyle = '#ff0';
+        state.coins.forEach(coin => {
+            const shadowColor = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
+            ctx.shadowColor = shadowColor;
+            ctx.shadowBlur = 70;
+            ctx.beginPath();
+            ctx.arc(coin.x, coin.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        });
+    }
 
     // Draw score
     ctx.fillStyle = '#fff';
