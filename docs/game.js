@@ -193,11 +193,16 @@ function openShop() {
     console.log('Shop opened');
 }
 
-// Game loop
+// Game loop with IE fallback
 function gameLoop() {
     updateGame();
     drawGame();
-    requestAnimationFrame(gameLoop);
+    // IE fallback for requestAnimationFrame
+    if (window.requestAnimationFrame) {
+        requestAnimationFrame(gameLoop);
+    } else {
+        setTimeout(gameLoop, 1000 / 60);
+    }
 }
 
 // Spawn enemies and coins periodically
