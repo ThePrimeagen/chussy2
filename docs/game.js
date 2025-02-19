@@ -28,6 +28,9 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Load assets
+const ANIME_GIRL_SPRITE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKUSURBVFiF7ZdNaBNBFMd/s9mkTWqSJk1JW7QqVkWkKB5E/LiIBz0IHhQP4smDFBE96NGDiCBeRPCgICIePCh4EDyJKCLiQaqCn1Vr1TaxX2natGmbNLvjYZNQapKNwYvgf9h9M/P+v5n3ZnYXYmJiYmJi/jFCVJGxgQutLqt1QEF0KKDVg9MBhgaGBgt+0F0Q8MHrg4U5WJiHOQ/4QqJnGXwB8C/7cblcRQKaptWsr6tpQwfg9kDfEehsg+5OaG8Fu6263vRnmPLAu0/w8j28eAsTn8DnD4VFUcxqmhbUdd0kSZJRIVAUBYfDEVHsdMDxI3DyGBzYA4oSWby1GY7sgxMDkJmHp6/h0XOYmQNVVc2qqpbVxWAwGNzc3KxrmsZGxe6dMD4Kj27A+cHw4rXY2QaXhmFqAq4OQ0dbKLZly5b1/0QgEMDpdEYU7+2Gx7fg7jXY01V//M52uH8dHt6E/T3rx202W1ldVVUxm81/JGDRYP8eePcE7l2HzraNz7OrA+5ehwf5cPZQyJvNZkRRLBNQFAWLxVJ3YLMZTh+HyXG4NQItTRvPvxaXE26PwtvHcG4QrFYriqKU1SVJQpblugI2K1wcgk9P4MoFaLJvbvHvabLDtQswPQ6XhsFmtSLLMoqilAkEg0Hs9sgXpd0Gly/A7DhcPgeODSxc9/PrAq4Mw+cJuDgEDrsNWZYJBoNldUmSEASh7gQAkoNw/Qh8fR7e5/U2YiP6jXDqIPyYhLPHQRAEJEkqq5tMJrxeL4ZhRJ6gqRFujMBMBvp6N79wbxdkH8KFDDA0UPf5EEURn8+HYRhlAoqiYLVasVgsUcVNDZAIL7jxb0IQBERRxOfzoes6APJvjT9e8/8RQRBQVZVAIABALBATExMT8z/zC1vqIVMI2EIJAAAAAElFTkSuQmCC';
+const CHEESE_SPRITE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGUlEQVQYV2P8z8Dwn4EAYBxVQEgBNs0gDQBn4gQJE+ZTogAAAABJRU5ErkJggg==';
+
 state.player.sprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGUlEQVQYV2NkYGD4z4AHMP7//x8/BYyjAQCmBQYNBzg8PQAAAABJRU5ErkJggg==';
 
 function spawnEnemy() {
@@ -39,7 +42,15 @@ function spawnEnemy() {
         case 2: x = Math.random() * canvas.width; y = canvas.height + 32; break;
         case 3: x = -32; y = Math.random() * canvas.height; break;
     }
-    state.enemies.push({ x, y, speed: 2 });
+    const animeGirl = new Image();
+    animeGirl.src = ANIME_GIRL_SPRITE;
+    state.enemies.push({ 
+        x, 
+        y, 
+        speed: 2,
+        sprite: animeGirl,
+        catchphrase: ["Baka!", "Nani?!", "Kawaii~", "Senpai!"][Math.floor(Math.random() * 4)]
+    });
 }
 
 function spawnCoin() {
