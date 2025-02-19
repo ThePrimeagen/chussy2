@@ -3,16 +3,20 @@ const state = {
     player: {
         x: 400,
         y: 300,
+        angle: 0,
         speed: 5,
-        sprite: new Image(),
-        coins: 0
+        turnSpeed: 0.1,
+        moveSpeed: 5,
+        sprite: new Image()
     },
-    enemies: [],
-    coins: [],
-    shopItems: [
-        { name: 'Speed Boost', price: 100, effect: () => { state.player.speed += 1; } },
-        { name: 'Invincibility', price: 200, effect: () => { /* TODO */ } }
-    ]
+    keys: {
+        forward: false,
+        backward: false,
+        turnLeft: false,
+        turnRight: false,
+        strafeLeft: false,
+        strafeRight: false
+    }
 };
 
 // Initialize canvas
@@ -42,35 +46,37 @@ function spawnCoin() {
 }
 
 function updateGame() {
-    // Move player
-    if (keys.ArrowLeft) state.player.x -= state.player.speed;
-    if (keys.ArrowRight) state.player.x += state.player.speed;
-    if (keys.ArrowUp) state.player.y -= state.player.speed;
-    if (keys.ArrowDown) state.player.y += state.player.speed;
+    // Update player rotation
+    if (state.keys.turnLeft) state.player.angle -= state.player.turnSpeed;
+    if (state.keys.turnRight) state.player.angle += state.player.turnSpeed;
+
+    // Calculate movement vector
+    const dx = Math.cos(state.player.angle);
+    const dy = Math.sin(state.player.angle);
+
+    // Forward/backward movement
+    if (state.keys.forward) {
+        state.player.x += dx * state.player.moveSpeed;
+        state.player.y += dy * state.player.moveSpeed;
+    }
+    if (state.keys.backward) {
+        state.player.x -= dx * state.player.moveSpeed;
+        state.player.y -= dy * state.player.moveSpeed;
+    }
+
+    // Strafe movement
+    if (state.keys.strafeLeft) {
+        state.player.x += dy * state.player.moveSpeed;
+        state.player.y -= dx * state.player.moveSpeed;
+    }
+    if (state.keys.strafeRight) {
+        state.player.x -= dy * state.player.moveSpeed;
+        state.player.y += dx * state.player.moveSpeed;
+    }
 
     // Keep player in bounds
     state.player.x = Math.max(0, Math.min(canvas.width, state.player.x));
     state.player.y = Math.max(0, Math.min(canvas.height, state.player.y));
-
-    // Update enemies
-    state.enemies.forEach(enemy => {
-        const dx = state.player.x - enemy.x;
-        const dy = state.player.y - enemy.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        enemy.x += (dx / dist) * enemy.speed;
-        enemy.y += (dy / dist) * enemy.speed;
-    });
-
-    // Collect coins
-    state.coins = state.coins.filter(coin => {
-        const dx = state.player.x - coin.x;
-        const dy = state.player.y - coin.y;
-        if (Math.sqrt(dx * dx + dy * dy) < 20) {
-            state.player.coins += 10;
-            return false;
-        }
-        return true;
-    });
 }
 
 function drawGame() {
@@ -103,9 +109,27 @@ function drawGame() {
 }
 
 // Input handling
-const keys = {};
-window.addEventListener('keydown', e => keys[e.key] = true);
-window.addEventListener('keyup', e => keys[e.key] = false);
+window.addEventListener('keydown', e => {
+    switch(e.key) {
+        case 'w': state.keys.forward = true; break;
+        case 's': state.keys.backward = true; break;
+        case 'a': state.keys.strafeLeft = true; break;
+        case 'd': state.keys.strafeRight = true; break;
+        case 'ArrowLeft': state.keys.turnLeft = true; break;
+        case 'ArrowRight': state.keys.turnRight = true; break;
+    }
+});
+
+window.addEventListener('keyup', e => {
+    switch(e.key) {
+        case 'w': state.keys.forward = false; break;
+        case 's': state.keys.backward = false; break;
+        case 'a': state.keys.strafeLeft = false; break;
+        case 'd': state.keys.strafeRight = false; break;
+        case 'ArrowLeft': state.keys.turnLeft = false; break;
+        case 'ArrowRight': state.keys.turnRight = false; break;
+    }
+});
 
 // Shop functionality
 function openShop() {
