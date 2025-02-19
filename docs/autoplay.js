@@ -1,4 +1,4 @@
-// Autoplay AI for demo purposes
+// SI automatycznej gry do celów demonstracyjnych
 function updateAutoplay() {
     if (!state.autoplay) return;
 
