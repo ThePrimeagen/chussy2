@@ -10,8 +10,12 @@ const state = {
         maxSpeed: 8,
         sprintMultiplier: 1.6,
         turnSpeed: 0.08,
-        sprite: new Image()
+        sprite: new Image(),
+        coins: 0
     },
+    enemies: [],
+    projectiles: [],
+    coins: [],
     keys: {
         forward: false,
         backward: false,
