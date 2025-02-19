@@ -1,4 +1,4 @@
-// Auto-refresh implementation
+// Implementacja automatycznego odświeżania
 let lastActivity = Date.now();
 
 // Reset timer on user activity

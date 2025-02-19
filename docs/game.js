@@ -1,4 +1,4 @@
-// Game state
+// Stan gry
 const state = {
     player: {
         x: 400,
@@ -23,11 +23,11 @@ const state = {
     }
 };
 
-// Initialize canvas
+// Inicjalizacja płótna
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Load assets
+// Ładowanie zasobów
 const ANIME_GIRL_SPRITE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKUSURBVFiF7ZdNaBNBFMd/s9mkTWqSJk1JW7QqVkWkKB5E/LiIBz0IHhQP4smDFBE96NGDiCBeRPCgICIePCh4EDyJKCLiQaqCn1Vr1TaxX2natGmbNLvjYZNQapKNwYvgf9h9M/P+v5n3ZnYXYmJiYmJi/jFCVJGxgQutLqt1QEF0KKDVg9MBhgaGBgt+0F0Q8MHrg4U5WJiHOQ/4QqJnGXwB8C/7cblcRQKaptWsr6tpQwfg9kDfEehsg+5OaG8Fu6263vRnmPLAu0/w8j28eAsTn8DnD4VFUcxqmhbUdd0kSZJRIVAUBYfDEVHsdMDxI3DyGBzYA4oSWby1GY7sgxMDkJmHp6/h0XOYmQNVVc2qqpbVxWAwGNzc3KxrmsZGxe6dMD4Kj27A+cHw4rXY2QaXhmFqAq4OQ0dbKLZly5b1/0QgEMDpdEYU7+2Gx7fg7jXY01V//M52uH8dHt6E/T3rx202W1ldVVUxm81/JGDRYP8eePcE7l2HzraNz7OrA+5ehwf5cPZQyJvNZkRRLBNQFAWLxVJ3YLMZTh+HyXG4NQItTRvPvxaXE26PwtvHcG4QrFYriqKU1SVJQpblugI2K1wcgk9P4MoFaLJvbvHvabLDtQswPQ6XhsFmtSLLMoqilAkEg0Hs9sgXpd0Gly/A7DhcPgeODSxc9/PrAq4Mw+cJuDgEDrsNWZYJBoNldUmSEASh7gQAkoNw/Qh8fR7e5/U2YiP6jXDqIPyYhLPHQRAEJEkqq5tMJrxeL4ZhRJ6gqRFujMBMBvp6N79wbxdkH8KFDDA0UPf5EEURn8+HYRhlAoqiYLVasVgsUcVNDZAIL7jxb0IQBERRxOfzoes6APJvjT9e8/8RQRBQVZVAIABALBATExMT8z/zC1vqIVMI2EIJAAAAAElFTkSuQmCC';
 const CHEESE_SPRITE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGUlEQVQYV2P8z8Dwn4EAYBxVQEgBNs0gDQBn4gQJE+ZTogAAAABJRU5ErkJggg==';
 
@@ -61,18 +61,18 @@ function spawnCoin() {
 }
 
 function updateGame() {
-    // Update player rotation with smooth turning
+    // Aktualizacja obrotu gracza z płynnym skrętem
     if (state.keys.turnLeft) state.player.angle -= state.player.turnSpeed;
     if (state.keys.turnRight) state.player.angle += state.player.turnSpeed;
 
-    // Calculate movement vectors
+    // Obliczanie wektorów ruchu
     const dx = Math.cos(state.player.angle);
     const dy = Math.sin(state.player.angle);
     
-    // Get current speed multiplier
+    // Pobierz aktualny mnożnik prędkości
     const speedMultiplier = state.keys.sprint ? state.player.sprintMultiplier : 1;
 
-    // Calculate acceleration vector
+    // Oblicz wektor przyspieszenia
     let accelX = 0;
     let accelY = 0;
 
@@ -81,7 +81,7 @@ function updateGame() {
         accelY += dy * state.player.acceleration;
     }
     if (state.keys.backward) {
-        accelX -= dx * state.player.acceleration * 0.7; // Slower backward movement
+        accelX -= dx * state.player.acceleration * 0.7; // Wolniejszy ruch do tyłu
         accelY -= dy * state.player.acceleration * 0.7;
     }
     if (state.keys.strafeLeft) {
