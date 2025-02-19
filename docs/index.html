@@ -2,8 +2,9 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Pixel Horror Chase</title>
+    <title>Chussy Inferno 3D</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Sans+MS&display=swap');
         body { 
             margin: 0;
             background: #000;
@@ -11,6 +12,20 @@
             flex-direction: column;
             align-items: center;
             overflow: hidden;
+        }
+        .game-title {
+            font-family: 'Comic Sans MS', cursive;
+            color: #ff4400;
+            font-size: 48px;
+            text-align: center;
+            margin: 10px 0;
+            text-shadow: 0 0 10px #ff0000;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
         }
         #gameContainer {
             position: relative;
@@ -52,6 +67,7 @@
             data-ad-slot="YOURSLOTID"
             data-ad-format="auto"></ins>
     </div>
+    <h1 class="game-title">🔥 Chussy Inferno 3D 🔥</h1>
     <div id="gameContainer">
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         <button class="shop-button" onclick="openShop()">SHOP</button>
