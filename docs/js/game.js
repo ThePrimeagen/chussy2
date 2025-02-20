@@ -12,19 +12,24 @@ let minimapCtx = null;
 
 // Initialize canvases and contexts
 function initializeCanvases() {
-    canvas = document.getElementById('gameCanvas');
-    if (!canvas) throw new Error('Canvas initialization failed');
-    ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('Context initialization failed');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    try {
+        canvas = document.getElementById('gameCanvas');
+        if (!canvas) throw new Error('Canvas initialization failed');
+        ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('Context initialization failed');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-    minimapCanvas = document.getElementById('minimapCanvas');
-    if (!minimapCanvas) throw new Error('Minimap canvas initialization failed');
-    minimapCtx = minimapCanvas.getContext('2d');
-    if (!minimapCtx) throw new Error('Minimap context initialization failed');
-    minimapCanvas.width = 200;
-    minimapCanvas.height = 200;
+        minimapCanvas = document.getElementById('minimapCanvas');
+        if (!minimapCanvas) throw new Error('Minimap canvas initialization failed');
+        minimapCtx = minimapCanvas.getContext('2d');
+        if (!minimapCtx) throw new Error('Minimap context initialization failed');
+        minimapCanvas.width = 200;
+        minimapCanvas.height = 200;
+    } catch (error) {
+        console.error('Canvas initialization error:', error);
+        throw error;
+    }
 }
 
 export const state = {
@@ -33,6 +38,7 @@ export const state = {
     gameOver: false,
     lastShot: 0,
     shootCooldown: 250,
+    player: player,
     autoplay: {
         enabled: false,
         lastActivity: Date.now(),
