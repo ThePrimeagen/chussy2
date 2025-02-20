@@ -50,6 +50,14 @@ export function updateEnemies(state, player) {
                     enemy.y = newY;
                 }
             }
+
+            // Damage player if too close
+            if (dist < 0.5) {
+                state.player.health = Math.max(0, state.player.health - 0.5);
+                if (state.player.health <= 0) {
+                    state.gameOver = true;
+                }
+            }
         });
     }
 }
