@@ -187,12 +187,10 @@ function drawGame() {
 // Input handling
 window.addEventListener('keydown', e => {
     switch(e.key) {
-        case 'w': state.keys.forward = true; break;
-        case 's': state.keys.backward = true; break;
-        case 'a': state.keys.strafeLeft = true; break;
-        case 'd': state.keys.strafeRight = true; break;
-        case 'ArrowLeft': state.keys.turnLeft = true; break;
-        case 'ArrowRight': state.keys.turnRight = true; break;
+        case 'w': state.player.y -= 5; break;
+        case 's': state.player.y += 5; break;
+        case 'a': state.player.x -= 5; break;
+        case 'd': state.player.x += 5; break;
         case 'Shift': state.keys.sprint = true; break;
     }
     e.preventDefault(); // Prevent default browser scrolling
