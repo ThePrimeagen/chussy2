@@ -36,7 +36,9 @@ export function updateCollectibles(state, player) {
         if (distance < 0.5) {
             cheese.collected = true;
             if (!state.score) state.score = 0;
+            if (!state.coins) state.coins = 0;
             state.score += 100;
+            state.coins += 25; // Award coins for collecting cheese
         }
     });
 }

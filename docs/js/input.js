@@ -93,6 +93,12 @@ export function setupInputHandlers(state) {
     
     // Add mouse click shooting *BEEP BOOP*
     document.addEventListener('click', (e) => {
+        // Check if click was in store area
+        if (e.clientY > canvas.height - 200) {
+            handleStoreClick(state, e.clientX, e.clientY);
+            return;
+        }
+        
         shoot(state);
         state.autoplay.enabled = false;
         state.autoplay.lastActivity = Date.now();

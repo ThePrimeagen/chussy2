@@ -5,6 +5,7 @@ import { updateCollectibles, renderCollectibles, spawnCheese } from './collectib
 import { drawWalls, drawHUD, drawArms, drawMinimap } from './render.js';
 import { setupInputHandlers, keys, updateAutoplay } from './input.js';
 import { spawnDuck, updateDucks, renderDuck, duckTypes } from './ducks.js';
+import { renderStore, handleStoreClick } from './store.js';
 
 // Canvas contexts
 let canvas = null;
@@ -144,6 +145,9 @@ export function gameLoop(timestamp) {
             renderDuck(ctx, duck, player, canvas);
         });
     }
+    
+    // Render store UI
+    renderStore(ctx, state);
     
     requestAnimationFrame(gameLoop);
 }
