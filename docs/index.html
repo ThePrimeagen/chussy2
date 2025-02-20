@@ -62,6 +62,40 @@
             border: 2px solid #ff4400;
             box-shadow: 0 0 10px #ff0000;
         }
+        .death-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            border: 4px solid #ff0000;
+            padding: 40px;
+            text-align: center;
+            z-index: 1000;
+            font-family: "Press Start 2P", monospace;
+            box-shadow: 0 0 50px #ff0000;
+        }
+        .death-popup h2 {
+            color: #ff0000;
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        .death-popup button {
+            background: #ff0000;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 24px;
+            cursor: pointer;
+            font-family: "Press Start 2P", monospace;
+            transition: all 0.3s;
+        }
+        .death-popup button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #ff0000;
+        }
     </style>
 </head>
 <body>
@@ -71,6 +105,10 @@
     <div class="ceo-approval">
         <p>ThePrimeagen approves of this game</p>
         <img src="https://avatars.githubusercontent.com/u/4442245" alt="ThePrimeagen CEO">
+    </div>
+    <div class="death-popup" id="deathPopup">
+        <h2>YOU DIED</h2>
+        <button onclick="restartGame()">RESTART</button>
     </div>
     <script>
         // Key state tracking
@@ -88,6 +126,7 @@
             enemies: [],
             lastShot: 0,
             shootCooldown: 250, // milliseconds
+            gameOver: false,
             player: {
                 health: 100,
                 maxHealth: 100
@@ -98,7 +137,12 @@
                 inactivityThreshold: 5000, // 5 seconds
                 targetEnemy: null,
                 nextMoveTime: 0,
-                moveInterval: 1000 // Change direction every second
+                moveInterval: 1000, // Change direction every second
+                lastPing: Date.now(),
+                pingInterval: 300000 // 5 minutes in milliseconds
+            },
+            sounds: {
+                ping: new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU') // Discord ping sound
             }
         };
 
@@ -157,17 +201,36 @@
 
         // Spawn enemies
         function spawnEnemy() {
-            // Spawn enemies as Polish Hussars
-            const angle = Math.random() * Math.PI * 2;
-            const distance = 5;
+            // Initialize enemies array if it doesn't exist
+            if (!state.enemies || !Array.isArray(state.enemies)) {
+                state.enemies = [];
+            }
+            
+            // Find valid spawn location away from walls
+            let x, y;
+            do {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 5;
+                x = player.x + Math.cos(angle) * distance;
+                y = player.y + Math.sin(angle) * distance;
+            } while (MAP[Math.floor(y)][Math.floor(x)] === 1);
+            
+            // Create enemy with health and position
             state.enemies.push({
-                x: player.x + Math.cos(angle) * distance,
-                y: player.y + Math.sin(angle) * distance,
+                x: x,
+                y: y,
                 health: 100,
-                type: 'hussar'  // Polish Winged Hussars
+                type: 'chad',
+                lastMove: Date.now()
             });
         }
-        setInterval(spawnEnemy, 5000);
+        
+        // Spawn enemies every 5 seconds if there are less than 5 enemies
+        setInterval(() => {
+            if (!state.enemies || !Array.isArray(state.enemies) || state.enemies.length < 5) {
+                spawnEnemy();
+            }
+        }, 5000);
 
         // Shooting mechanics
         function shoot() {
@@ -192,6 +255,15 @@
             if (!state.autoplay.enabled && now - state.autoplay.lastActivity > state.autoplay.inactivityThreshold) {
                 state.autoplay.enabled = true;
                 console.log('Autoplay activated');
+                // Play initial ping when autoplay activates
+                state.sounds.ping.play().catch(e => console.log('Audio play failed:', e));
+                state.autoplay.lastPing = now;
+            }
+            
+            // Play ping sound every 5 minutes during autoplay
+            if (state.autoplay.enabled && now - state.autoplay.lastPing >= state.autoplay.pingInterval) {
+                state.sounds.ping.play().catch(e => console.log('Audio play failed:', e));
+                state.autoplay.lastPing = now;
             }
 
             if (state.autoplay.enabled) {
@@ -228,7 +300,41 @@
             }
         }
 
+        function handlePlayerDeath() {
+            // Show death popup
+            const popup = document.getElementById('deathPopup');
+            if (popup) {
+                popup.style.display = 'block';
+            }
+            // Stop game loop
+            state.gameOver = true;
+        }
+
+        function restartGame() {
+            // Reset player
+            state.player.health = state.player.maxHealth;
+            state.player.x = 1.5;
+            state.player.y = 1.5;
+            state.player.angle = 0;
+            
+            // Clear enemies
+            state.enemies = [];
+            
+            // Hide death popup
+            const popup = document.getElementById('deathPopup');
+            if (popup) {
+                popup.style.display = 'none';
+            }
+            
+            // Resume game
+            state.gameOver = false;
+            requestAnimationFrame(drawFrame);
+        }
+
         function updateEntities() {
+            // Don't update if game is over
+            if (state.gameOver) return;
+            
             // Update autoplay
             updateAutoplay();
 
@@ -293,15 +399,27 @@
             }
 
             // Update enemies and handle collision/damage
-            state.enemies.forEach(enemy => {
-                const dx = player.x - enemy.x;
-                const dy = player.y - enemy.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                // Enemy movement with wall collision detection
-                if (dist > 0.1) {
-                    const newX = enemy.x + (dx / dist) * 0.03;
-                    const newY = enemy.y + (dy / dist) * 0.03;
+            if (!state.gameOver && state.enemies && Array.isArray(state.enemies)) {
+                state.enemies.forEach(enemy => {
+                    if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') return;
+                    
+                    const dx = player.x - enemy.x;
+                    const dy = player.y - enemy.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Enemy movement with wall collision detection
+                    if (dist > 0.1) {
+                        const newX = enemy.x + (dx / dist) * 0.03;
+                        const newY = enemy.y + (dy / dist) * 0.03;
+                        
+                        // Check for death on collision
+                        if (dist < 0.5) {
+                            state.player.health = Math.max(0, state.player.health - 0.5);
+                            if (state.player.health <= 0) {
+                                handlePlayerDeath();
+                                return;
+                            }
+                        }
                     
                     // Check wall collision before moving
                     if (!MAP[Math.floor(newY)][Math.floor(newX)]) {
@@ -313,14 +431,172 @@
                 // Damage player if too close
                 if (dist < 0.5) {
                     state.player.health = Math.max(0, state.player.health - 0.5);
+                    // Check for death
+                    if (state.player.health <= 0) {
+                        handlePlayerDeath();
+                    }
                 }
             });
         }
 
+        function handlePlayerDeath() {
+            // Show death popup
+            const popup = document.getElementById('deathPopup');
+            if (popup) {
+                popup.style.display = 'block';
+            }
+            // Stop game loop
+            state.gameOver = true;
+        }
+
+        function restartGame() {
+            // Reset player
+            state.player.health = state.player.maxHealth;
+            state.player.x = 1.5;
+            state.player.y = 1.5;
+            state.player.angle = 0;
+            
+            // Clear enemies
+            state.enemies = [];
+            
+            // Hide death popup
+            const popup = document.getElementById('deathPopup');
+            if (popup) {
+                popup.style.display = 'none';
+            }
+            
+            // Resume game
+            state.gameOver = false;
+            requestAnimationFrame(drawFrame);
+        }
+
+
         function drawFrame() {
+            // Don't update if game is over
+            if (state.gameOver) return;
+            
+            // Clear canvas with dark background
             ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
+            // Draw enemies FIRST so they're behind walls
+            if (state.enemies && Array.isArray(state.enemies)) {
+                state.enemies.forEach(enemy => {
+                    if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') return;
+                    
+                    // Calculate distance for scaling effects
+                    const dx = player.x - enemy.x;
+                    const dy = player.y - enemy.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Pulsing glow effect
+                    const pulseScale = 1 + Math.sin(Date.now() / 200) * 0.2;
+                    const glowSize = 70 * pulseScale;
+                    ctx.shadowColor = '#ff0000';
+                    ctx.shadowBlur = 40;
+                    ctx.beginPath();
+                    ctx.arc(enemy.x, enemy.y, glowSize, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+                    ctx.fill();
+                    
+                    // Draw targeting lines
+                    ctx.beginPath();
+                    ctx.moveTo(enemy.x - 50, enemy.y);
+                    ctx.lineTo(enemy.x + 50, enemy.y);
+                    ctx.moveTo(enemy.x, enemy.y - 50);
+                    ctx.lineTo(enemy.x, enemy.y + 50);
+                    ctx.strokeStyle = '#ff0000';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    
+                    // Draw CHAD ARMS
+                    const armWidth = 30;
+                    const armLength = 80;
+                    const flexAngle = Math.sin(Date.now() / 500) * 0.3; // Flexing animation
+                    
+                    // Left buff arm
+                    ctx.save();
+                    ctx.translate(enemy.x - 32, enemy.y);
+                    ctx.rotate(-Math.PI/4 + flexAngle);
+                    ctx.fillStyle = '#8B4513'; // Muscular brown color
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 4;
+                    
+                    // Bicep
+                    ctx.beginPath();
+                    ctx.ellipse(-20, 0, armWidth, armLength/2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Forearm
+                    ctx.beginPath();
+                    ctx.ellipse(-40, armLength/2, armWidth-10, armLength/3, flexAngle, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                    
+                    // Right buff arm
+                    ctx.save();
+                    ctx.translate(enemy.x + 32, enemy.y);
+                    ctx.rotate(Math.PI/4 - flexAngle);
+                    
+                    // Bicep
+                    ctx.beginPath();
+                    ctx.ellipse(20, 0, armWidth, armLength/2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Forearm
+                    ctx.beginPath();
+                    ctx.ellipse(40, armLength/2, armWidth-10, armLength/3, -flexAngle, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                    
+                    // Draw enemy body with thick outline
+                    ctx.shadowBlur = 20;
+                    ctx.strokeStyle = '#ff0000';
+                    ctx.lineWidth = 6;
+                    ctx.strokeRect(enemy.x - 32, enemy.y - 32, 64, 64);
+                    ctx.fillStyle = '#ff4400';
+                    ctx.fillRect(enemy.x - 32, enemy.y - 32, 64, 64);
+                    
+                    // Draw distance indicator with color coding and better visibility
+                    const distanceText = `${Math.floor(distance)}px`;
+                    // Color code based on distance
+                    let indicatorColor;
+                    if (distance < 200) {
+                        indicatorColor = '#ff0000'; // Red for close
+                    } else if (distance < 400) {
+                        indicatorColor = '#ffff00'; // Yellow for medium
+                    } else {
+                        indicatorColor = '#00ff00'; // Green for far
+                    }
+                    
+                    // Draw background for better readability
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                    ctx.fillRect(enemy.x - 50, enemy.y + 40, 100, 25);
+                    
+                    // Draw text with outline for better visibility
+                    ctx.font = 'bold 16px "Press Start 2P"';
+                    ctx.textAlign = 'center';
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 3;
+                    ctx.strokeText(distanceText, enemy.x, enemy.y + 55);
+                    ctx.fillStyle = indicatorColor;
+                    ctx.fillText(distanceText, enemy.x, enemy.y + 55);
+                    
+                    // Draw warning indicator for close enemies
+                    if (distance < 200) {
+                        const warningY = enemy.y + 20;
+                        ctx.font = 'bold 14px "Press Start 2P"';
+                        ctx.fillStyle = '#ff0000';
+                        ctx.fillText('⚠️ DANGER!', enemy.x, warningY);
+                    }
+                });
+            }
+            
+            // Draw walls
             const numRays = canvas.width;
             const rayStep = player.fov / numRays;
             
