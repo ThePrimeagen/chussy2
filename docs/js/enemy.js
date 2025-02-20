@@ -47,8 +47,9 @@ export function spawnEnemy(state) {
 
 export function updateEnemies(state, player) {
     if (!state.gameOver && state.enemies && Array.isArray(state.enemies)) {
-        state.enemies.forEach(enemy => {
-            if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') return;
+        for (let i = state.enemies.length - 1; i >= 0; i--) {
+            const enemy = state.enemies[i];
+            if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') continue;
             
             const dx = player.x - enemy.x;
             const dy = player.y - enemy.y;
@@ -56,8 +57,8 @@ export function updateEnemies(state, player) {
             
             // Remove enemy on collision
             if (dist < 0.5) {
-                state.enemies.splice(index, 1);
-                return;
+                state.enemies.splice(i, 1);
+                continue;
             }
             
             // Update movement (10x slower)
@@ -70,16 +71,7 @@ export function updateEnemies(state, player) {
                     enemy.y = newY;
                 }
             }
-            }
-
-            // Damage player if too close
-            if (dist < 0.5) {
-                state.player.health = Math.max(0, state.player.health - 0.5);
-                if (state.player.health <= 0) {
-                    state.gameOver = true;
-                }
-            }
-        });
+        }
     }
 }
 
