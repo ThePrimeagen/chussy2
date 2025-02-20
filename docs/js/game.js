@@ -154,7 +154,7 @@ export function gameLoop(timestamp) {
             }
             
             // Render bullet using worldToScreen
-            const { screenX, screenY } = worldToScreen(
+            const { screenX, screenY, size } = worldToScreen(
                 projectile.x, projectile.y,
                 player.x, player.y,
                 player.angle,
@@ -163,10 +163,20 @@ export function gameLoop(timestamp) {
             
             // Only render if in view
             if (screenX >= 0 && screenX <= canvas.width) {
-                ctx.fillStyle = '#ffff00';  // Bright yellow bullets
-                ctx.beginPath();
-                ctx.arc(screenX, screenY, 4, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.save();
+                const sprite = spriteCache['BULLET'];
+                if (sprite) {
+                    const width = Math.max(16, size * 1.5);  // Bigger bullets
+                    const height = width;
+                    ctx.drawImage(
+                        sprite,
+                        screenX - width/2,
+                        screenY - height/2,
+                        width,
+                        height
+                    );
+                }
+                ctx.restore();
             }
             
             return true;
@@ -174,7 +184,7 @@ export function gameLoop(timestamp) {
     }
     
     drawArms(ctx, player, canvas);
-    drawHUD(ctx, state);
+    drawHUD(ctx, state, canvas);
     
     // Update arm swing animation
     if (keys.w || keys.s) {
@@ -186,7 +196,11 @@ export function gameLoop(timestamp) {
         updateEnemies(state, player);
     }
     updateCollectibles(state, player);
+    // Update autoplay with shooting
     updateAutoplay(state, player);
+    if (state.autoplay.enabled && state.autoplay.targetEnemy && state.bullets > 0) {
+        shoot(state);
+    }
     
     drawMinimap(minimapCtx, state, player);
     

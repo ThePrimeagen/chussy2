@@ -25,7 +25,7 @@ export function drawWalls(ctx, player, canvas) {
     }
 }
 
-export function drawHUD(ctx, state) {
+export function drawHUD(ctx, state, canvas) {
     // Health bar
     ctx.fillStyle = '#ff0000';
     ctx.fillRect(10, 10, 200 * (state.player.health / state.player.maxHealth), 20);
@@ -33,14 +33,15 @@ export function drawHUD(ctx, state) {
     ctx.strokeRect(10, 10, 200, 20);
     
     // Gun icon and bullet count in bottom right
+    ctx.save();
     ctx.fillStyle = '#666666';
     ctx.fillRect(canvas.width - 60, canvas.height - 40, 40, 20);  // Gun body
     ctx.fillRect(canvas.width - 50, canvas.height - 45, 20, 5);   // Gun barrel
-    
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px monospace';
     ctx.textAlign = 'right';
     ctx.fillText(`${state.bullets}/${state.maxBullets}`, canvas.width - 10, canvas.height - 10);
+    ctx.restore();
     
     // Crosshair - perfectly centered with pixel-perfect alignment
     const centerX = Math.floor(ctx.canvas.width / 2) + 0.5;  // Add 0.5 for crisp lines
