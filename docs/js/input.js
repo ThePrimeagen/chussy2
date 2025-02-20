@@ -1,4 +1,4 @@
-import { worldToScreen } from './enemy.js';
+import { worldToScreen } from './utils.js';
 import { player } from './player.js';
 import { shoot } from './player.js';
 

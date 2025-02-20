@@ -1,34 +1,27 @@
 import { GAME_CONFIG } from './utils.js';
 import { player } from './player.js';
 import { MAP, checkWallCollision, castRay } from './map.js';
-import { calculateDistance, spriteCache } from './utils.js';
+import { calculateDistance, spriteCache, worldToScreen } from './utils.js';
 import { findPath } from './pathfinding.js';
 
-// *BEEP BOOP* Breaking circular dependency because SOMEONE didn't think about architecture... *MECHANICAL GROAN*
-function worldToScreen(x, y, playerX, playerY, playerAngle, canvas) {
-    const dx = x - playerX;
-    const dy = y - playerY;
-    const angle = Math.atan2(dy, dx);
-    const relativeAngle = ((angle - playerAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    const screenX = (Math.tan(relativeAngle) + 1) * canvas.width / 2;
-    const screenY = canvas.height / 2;
-    const size = canvas.height / distance;
-    return { screenX, screenY, size, distance };
-}
+
 
 export function spawnEnemy(state) {
     if (!state.enemies || !Array.isArray(state.enemies)) {
         state.enemies = [];
     }
     
-    // Get map center coordinates
-    const centerX = Math.floor(MAP[0].length / 2);
-    const centerY = Math.floor(MAP.length / 2);
-    
-    // Add some randomness to spawn position around center
-    const x = centerX + (Math.random() * 2 - 1);
-    const y = centerY + (Math.random() * 2 - 1);
+    // Find valid spawn position
+    let x, y;
+    const safeSpawnPoints = [
+        { x: 3.5, y: 3.5 },
+        { x: 8.5, y: 3.5 },
+        { x: 3.5, y: 8.5 },
+        { x: 8.5, y: 8.5 }
+    ];
+    const spawnPoint = safeSpawnPoints[Math.floor(Math.random() * safeSpawnPoints.length)];
+    x = spawnPoint.x + (Math.random() * 2 - 1);
+    y = spawnPoint.y + (Math.random() * 2 - 1);
     
     // Only spawn if position is valid (not in a wall)
     if (!checkWallCollision(x, y)) {

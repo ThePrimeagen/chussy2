@@ -2,8 +2,8 @@ import { GAME_CONFIG } from './utils.js';
 import { checkWallCollision } from './map.js';
 
 export const player = {
-    x: 1.5,
-    y: 1.5,
+    x: 3.5,  // Moved to more open area
+    y: 3.5,  // Away from corners and walls
     angle: 0,
     fov: GAME_CONFIG.FOV,
     speed: GAME_CONFIG.PLAYER_SPEED * 0.3, // Reduced movement speed
