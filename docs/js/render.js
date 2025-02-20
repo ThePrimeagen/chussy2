@@ -24,10 +24,11 @@ export function drawWalls(ctx, player, canvas) {
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Use cool colors for walls with better depth perception
-        const baseIntensity = Math.min(255, (400/distance));
-        const wallColor = `rgb(${baseIntensity * 0.8}, ${baseIntensity * 0.4}, ${baseIntensity * 0.6})`;
-        const outlineColor = `rgb(${baseIntensity * 0.6}, ${baseIntensity * 0.3}, ${baseIntensity * 0.5})`;
+        // Rainbow colors based on time and position
+        const hue = (Date.now() * 0.1 + i * 0.5) % 360;
+        const baseIntensity = Math.min(100, (400/distance));
+        const wallColor = `hsl(${hue}, 70%, ${baseIntensity}%)`;
+        const outlineColor = `hsl(${hue}, 70%, ${baseIntensity * 0.8}%)`;
         
         // Draw wall with outline for depth
         ctx.fillStyle = wallColor;
@@ -66,7 +67,8 @@ export function drawMinimap(minimapCtx, state, player) {
     for (let y = 0; y < MAP.length; y++) {
         for (let x = 0; x < MAP[y].length; x++) {
             if (MAP[y][x] === 1) {
-                ctx.fillStyle = '#4466aa';
+                const hue = (Date.now() * 0.1 + (x + y) * 10) % 360;
+                ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
                 ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
         }
