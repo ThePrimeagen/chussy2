@@ -16,6 +16,8 @@ const state = {
     enemies: [],
     projectiles: [],
     coins: [],
+    lastStrobeTime: Date.now(),
+    currentShadowColor: `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`,
     keys: {
         forward: false,
         backward: false,
@@ -138,26 +140,33 @@ function drawGame() {
     ctx.fillStyle = '#111';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw player
-    ctx.drawImage(state.player.sprite, state.player.x - 16, state.player.y - 16);
+    // Update strobe color every 250ms
+    if (Date.now() - state.lastStrobeTime > 250) {
+        state.currentShadowColor = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
+        state.lastStrobeTime = Date.now();
+    }
 
-    // Draw enemies with RGB shadows
+    // Draw player
+    ctx.shadowColor = state.currentShadowColor;
+    ctx.shadowBlur = 70;
+    ctx.drawImage(state.player.sprite, state.player.x - 16, state.player.y - 16);
+    ctx.shadowBlur = 0;
+
+    // Draw enemies with synchronized RGB shadows
     if (state.enemies) {
         state.enemies.forEach(enemy => {
-            const shadowColor = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
-            ctx.shadowColor = shadowColor;
+            ctx.shadowColor = state.currentShadowColor;
             ctx.shadowBlur = 70;
             ctx.drawImage(enemy.sprite, enemy.x - 32, enemy.y - 32, 64, 64);
             ctx.shadowBlur = 0;
         });
     }
 
-    // Draw coins with RGB shadows
+    // Draw coins with synchronized RGB shadows
     if (state.coins) {
         ctx.fillStyle = '#ff0';
         state.coins.forEach(coin => {
-            const shadowColor = `rgb(${Math.random()*255},${Math.random()*255},${Math.random()*255})`;
-            ctx.shadowColor = shadowColor;
+            ctx.shadowColor = state.currentShadowColor;
             ctx.shadowBlur = 70;
             ctx.beginPath();
             ctx.arc(coin.x, coin.y, 8, 0, Math.PI * 2);
