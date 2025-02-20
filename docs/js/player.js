@@ -6,7 +6,7 @@ export const player = {
     y: 1.5,
     angle: 0,
     fov: GAME_CONFIG.FOV,
-    speed: GAME_CONFIG.PLAYER_SPEED * 0.5,
+    speed: GAME_CONFIG.PLAYER_SPEED * 0.6,
     turnSpeed: 0.025,
     rotationVelocity: 0,
     rotationAcceleration: 0.005,
