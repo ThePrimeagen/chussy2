@@ -109,29 +109,18 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     
     const { screenX, screenY, size, distance } = worldToScreen(enemy.x, enemy.y, player.x, player.y, player.angle, canvas);
     
-    // Improved occlusion check with more precise ray casting
-    const checkPoints = [
-        { dx: -0.2, dy: -0.2 },
-        { dx: 0.2, dy: -0.2 },
-        { dx: -0.2, dy: 0.2 },
-        { dx: 0.2, dy: 0.2 },
-        { dx: 0, dy: 0 }
-    ];
-
-    let visible = false;
-    for (const point of checkPoints) {
-        const rayX = enemy.x + point.dx;
-        const rayY = enemy.y + point.dy;
-        const rayDist = Math.sqrt(Math.pow(rayX - player.x, 2) + Math.pow(rayY - player.y, 2));
-        const rayAngle = Math.atan2(rayY - player.y, rayX - player.x);
-        const wallDist = castRay(rayAngle, player.x, player.y);
-        if (Math.abs(rayDist - wallDist) < 0.3) {
-            visible = true;
-            break;
-        }
-    }
+    // Simplified visibility check using normalized angles
+    const dx = enemy.x - player.x;
+    const dy = enemy.y - player.y;
+    const angle = Math.atan2(dy, dx);
+    const relativeAngle = ((angle - player.angle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
     
-    if (!visible) return;
+    // Check if enemy is in field of view
+    if (Math.abs(relativeAngle) > GAME_CONFIG.FOV / 2) return;
+    
+    // Check if enemy is behind a wall
+    const wallDist = castRay(angle, player.x, player.y);
+    if (distance > wallDist) return;
     
     // Skip if outside view with margin
     const margin = size * 0.5;
