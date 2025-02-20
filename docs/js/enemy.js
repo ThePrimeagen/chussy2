@@ -1,6 +1,6 @@
 import { GAME_CONFIG } from './utils.js';
-import { MAP, checkWallCollision } from './map.js';
-import { calculateDistance } from './utils.js';
+import { MAP, checkWallCollision, castRay } from './map.js';
+import { calculateDistance, spriteCache } from './utils.js';
 
 // *BEEP BOOP* Breaking circular dependency because SOMEONE didn't think about architecture... *MECHANICAL GROAN*
 function worldToScreen(x, y, playerX, playerY, playerAngle, canvas) {
@@ -105,7 +105,7 @@ export function spawnEnemy(state, playerX, playerY) {
             x: x,
             y: y,
             health: 100,
-            type: `ANIME_GIRL_${Math.floor(Math.random() * 10) + 1}`,
+            type: `ENEMY_${Math.floor(Math.random() * 5) + 1}`,  // Use new pixel art enemies *BEEP BOOP*
             lastMove: Date.now(),
             frame: 0,
             animationSpeed: 0.1
@@ -147,14 +147,17 @@ export function updateEnemies(state, player) {
 export function renderEnemy(ctx, enemy, player, canvas) {
     if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') return;
     
-    // Calculate screen position
+    // Calculate screen position and check wall occlusion *BEEP BOOP*
     const dx = enemy.x - player.x;
     const dy = enemy.y - player.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    
-    // Convert world space to screen space with correct camera alignment
     const angle = Math.atan2(dy, dx);
     const relativeAngle = ((angle - player.angle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+    
+    // Check if enemy is behind a wall *MECHANICAL SIGH*
+    const rayDistance = castRay(player.angle + relativeAngle, player.x, player.y);
+    if (rayDistance < distance) return; // Enemy is occluded *WHIRR*
+    
     const screenX = (Math.tan(relativeAngle) + 1) * canvas.width / 2;
     const screenY = canvas.height / 2;
     const size = canvas.height / distance;
@@ -162,22 +165,26 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     // Skip if outside view
     if (screenX < -size || screenX > canvas.width + size) return;
     
-    // Draw enemy sprite
+    // Draw enemy with pixel art *BEEP BOOP*
     ctx.save();
     
-    // KAWAII MODE ACTIVATED! *BEEP BOOP* 
-    const animeEmojis = ['(づ˶•༝•˶)づ♡', '(◕‿◕✿)', '(≧◡≦)', '(★ω★)', '(✿◠‿◠)'];
-    const emoji = animeEmojis[Math.floor(enemy.type.slice(-1))%5];
-    
-    ctx.font = `${size}px Arial`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#FF69B4';  // Hot pink for maximum kawaii! *WHIRR*
-    ctx.fillText(emoji, screenX, screenY);
-    
-    // Add kawaii glow effect! ✨
-    ctx.shadowColor = 'rgba(255, 192, 203, 0.5)';
-    ctx.shadowBlur = 20;
+    const sprite = spriteCache[enemy.type] || spriteCache['ENEMY_1'];
+    if (sprite) {
+        const width = size * 1.5;  // Make enemies a bit wider for visibility
+        const height = size * 1.5;
+        
+        ctx.drawImage(
+            sprite,
+            screenX - width/2,
+            screenY - height/2,
+            width,
+            height
+        );
+        
+        // Add depth-based glow effect *WHIRR*
+        ctx.shadowColor = 'rgba(255, 0, 128, 0.5)';
+        ctx.shadowBlur = Math.min(20, size/2);
+    }
     
     ctx.restore();
     
