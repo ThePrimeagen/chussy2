@@ -12,20 +12,15 @@ export function drawWalls(ctx, player, canvas) {
 
     const numRays = canvas.width;
     const rayStep = player.fov / numRays;
-    const timestamp = Date.now() * 0.001;  // For wall rotation
     
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
-        
-        // Add rotation to ray angle based on time
-        const rotatedAngle = rayAngle + timestamp * 2;  // Spin speed multiplier
-        
-        const distance = castRay(rotatedAngle, player.x, player.y);
+        const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
         // Simple shading without expensive blur
         const shade = Math.max(0.4, 1 - distance / 15);
-        ctx.fillStyle = `rgba(139, 37, 0, ${shade})`;
+        ctx.fillStyle = `rgba(139, 37, 0, ${shade})`;  // Dark red walls
         ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
     }
 }
@@ -54,15 +49,12 @@ export function drawMinimap(minimapCtx, state, player) {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     
     const tileSize = ctx.canvas.width / MAP[0].length;
-    const timestamp = Date.now() * 0.001;
     
-    // Draw rotating walls
+    // Draw walls with consistent color
     for (let y = 0; y < MAP.length; y++) {
         for (let x = 0; x < MAP[y].length; x++) {
             if (MAP[y][x] === 1) {
-                // Rotate wall color based on time
-                const rotationColor = Math.sin(timestamp + x + y) * 127 + 128;
-                ctx.fillStyle = `rgb(${rotationColor}, 0, 0)`;
+                ctx.fillStyle = '#8B2500';  // Dark red to match main view
                 ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
         }
