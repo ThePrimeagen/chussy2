@@ -170,6 +170,9 @@ export function gameLoop(timestamp) {
                         ctx.restore();
                         
                         if (enemy.health <= 0) {
+                            // Drop ammo when enemy dies
+                            const ammoAmount = Math.floor(Math.random() * 5) + 3; // 3-7 bullets
+                            state.bullets = Math.min(state.maxBullets, state.bullets + ammoAmount);
                             state.enemies.splice(i, 1);
                         }
                         return false;  // Remove bullet on hit
