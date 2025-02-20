@@ -8,10 +8,29 @@
         body { 
             margin: 0;
             background: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
             overflow: hidden;
+        }
+        .flame-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .flame {
+            position: absolute;
+            font-size: 24px;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            from { transform: translateY(-20px); }
+            to { transform: translateY(100vh); }
         }
         .game-title {
             font-family: 'Wingdings', cursive;
@@ -70,7 +89,8 @@
         </div>
     </div>
     <h1 class="game-title">🔥 CHUSSY DEEZ NUTS INFERNO 3D 🔥</h1>
-    <div id="gameContainer">
+    <div class="flame-container" id="flameContainer"></div>
+    <div id="gameContainer" style="grid-column: 3 / 11; grid-row: 2;">
         <canvas id="gameCanvas" width="800" height="600"></canvas>
         <button class="shop-button" onclick="openShop()">SHOP</button>
     </div>
@@ -97,5 +117,11 @@
     <div style="position: fixed; bottom: 10px; width: 100%; text-align: center; color: #666; font-family: Arial;">
         Compatible with Internet Explorer and modern browsers
     </div>
+    <div style="position: fixed; bottom: 0; width: 100%; background: linear-gradient(45deg, #ff4444, #ff8844); padding: 10px; text-align: center; font-family: 'Comic Sans MS', cursive; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); z-index: 1000;">
+        <a href="https://terminal.shop" style="color: white; text-decoration: none; font-size: 24px;">
+            ✨ terminal.shop: now serving uWu girls as well ✨
+        </a>
+    </div>
+    <script src="flames.js"></script>
 </body>
 </html>
