@@ -27,7 +27,7 @@ export const GAME_CONFIG = {
             ENEMY_4: { src: 'resources/sprites/ships_packed.png', x: 96, y: 0, width: 32, height: 32 },
             ENEMY_5: { src: 'resources/sprites/ships_packed.png', x: 128, y: 0, width: 32, height: 32 }
         },
-        BULLET: { src: 'resources/sprites/ships_packed.png', x: 192, y: 0, width: 16, height: 16 },
+        BULLET: { src: 'resources/sprites/ships_packed.png', x: 192, y: 0, width: 16, height: 16, color: 'yellow' },
         TARGET: { src: 'resources/sprites/ships_packed.png', x: 224, y: 0, width: 32, height: 32 }
     }
 };
