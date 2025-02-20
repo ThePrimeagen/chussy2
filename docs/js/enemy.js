@@ -71,26 +71,32 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     const screenY = canvas.height / 2;
     const size = canvas.height / distance;
     
-    // Draw enemy with distinct colors and effects
+    // Skip if outside view
+    if (screenX < -size || screenX > canvas.width + size) return;
+    
+    // Draw enemy sprite
     ctx.save();
     
-    // Draw pulsing glow effect with unique color
-    const pulseScale = 1 + Math.sin(Date.now() / 200) * 0.2;
-    const glowSize = size * pulseScale;
-    ctx.shadowColor = '#ff6600';
-    ctx.shadowBlur = 30;
-    ctx.beginPath();
-    ctx.arc(screenX, screenY, glowSize, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255, 102, 0, 0.3)';
-    ctx.fill();
+    const sprite = spriteCache[enemy.type];
+    if (sprite) {
+        // Draw sprite with proper scaling
+        const height = size * 1.5; // Taller than walls for visibility
+        const width = height * (sprite.width / sprite.height);
+        
+        ctx.drawImage(
+            sprite,
+            screenX - width/2,
+            screenY - height/2,
+            width,
+            height
+        );
+        
+        // Add subtle glow effect for visibility
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
+        ctx.shadowBlur = 20;
+    }
     
-    // Draw enemy body with contrasting colors
-    ctx.shadowBlur = 15;
-    ctx.strokeStyle = '#ff3300';
-    ctx.lineWidth = 3;
-    ctx.fillStyle = '#ff9900';
-    ctx.fillRect(screenX - size/2, screenY - size/2, size, size);
-    ctx.strokeRect(screenX - size/2, screenY - size/2, size, size);
+    ctx.restore();
     
     // Draw distance indicator
     ctx.font = 'bold 16px "Press Start 2P"';
