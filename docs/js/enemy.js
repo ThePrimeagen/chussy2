@@ -1,4 +1,5 @@
 import { GAME_CONFIG } from './utils.js';
+import { player } from './player.js';
 import { MAP, checkWallCollision, castRay } from './map.js';
 import { calculateDistance, spriteCache } from './utils.js';
 
@@ -34,6 +35,11 @@ export function spawnEnemy(state, playerX, playerY) {
         // Check distance from player
         const playerDist = Math.sqrt((x - playerX) * (x - playerX) + (y - playerY) * (y - playerY));
         if (playerDist < MIN_PLAYER_DISTANCE || playerDist > MAX_PLAYER_DISTANCE) return false;
+        
+        // Check if spawn point is visible to player
+        const angle = Math.atan2(y - playerY, x - playerX);
+        const rayDistance = castRay(angle, playerX, playerY);
+        if (Math.abs(rayDistance - playerDist) > 0.5) return false; // Point is behind a wall
         
         // Check immediate position
         if (checkWallCollision(x, y)) return false;
@@ -75,18 +81,22 @@ export function spawnEnemy(state, playerX, playerY) {
     }
     
     do {
-        const angle = Math.random() * Math.PI * 2;
+        // Try spawning in player's field of view first
+        const fov = GAME_CONFIG.FOV;
+        const baseAngle = player.angle - fov/2;
+        const angle = baseAngle + Math.random() * fov;
         const distance = Math.random() * 3 + 4; // Spawn between 4-7 units away
         x = playerX + Math.cos(angle) * distance;
         y = playerY + Math.sin(angle) * distance;
         attempts++;
         
         if (attempts >= maxAttempts) {
-            // If initial attempts fail, try spawning in a valid location within map bounds
+            // If initial attempts fail, try systematic search in visible areas
             for (let distance = 4; distance <= 7; distance++) {
-                for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
-                    x = playerX + Math.cos(angle) * distance;
-                    y = playerY + Math.sin(angle) * distance;
+                for (let angleOffset = -fov/2; angleOffset <= fov/2; angleOffset += Math.PI/8) {
+                    const searchAngle = player.angle + angleOffset;
+                    x = playerX + Math.cos(searchAngle) * distance;
+                    y = playerY + Math.sin(searchAngle) * distance;
                     if (isValidSpawnPoint(x, y)) {
                         return; // Valid spawn point found
                     }
