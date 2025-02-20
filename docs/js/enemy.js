@@ -3,6 +3,7 @@ import { player } from './player.js';
 import { MAP, checkWallCollision, castRay } from './map.js';
 import { calculateDistance, spriteCache, worldToScreen } from './utils.js';
 import { findPath } from './pathfinding.js';
+import { handlePlayerDeath } from './game.js';
 
 
 
@@ -56,9 +57,13 @@ export function updateEnemies(state, player) {
             const dy = player.y - enemy.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             
-            // Remove enemy on collision
+            // Damage player and remove enemy on collision
             if (dist < 0.5) {
+                player.health = Math.max(0, player.health - 25);  // Reduce health by 25
                 state.enemies.splice(i, 1);
+                if (player.health <= 0) {
+                    handlePlayerDeath();
+                }
                 continue;
             }
             
@@ -128,13 +133,18 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     
     // Draw enemy with proper z-indexing and health bar
     ctx.save();
-    ctx.fillStyle = '#ffff00';  // Yellow for cheese theme
-    ctx.beginPath();
-    ctx.moveTo(screenX, screenY - size/2);  // Top point
-    ctx.lineTo(screenX - size/2, screenY + size/2);  // Bottom left
-    ctx.lineTo(screenX + size/2, screenY + size/2);  // Bottom right
-    ctx.closePath();
-    ctx.fill();
+    const sprite = spriteCache[enemy.type];
+    if (sprite) {
+        const width = Math.max(16, size);
+        const height = width;
+        ctx.drawImage(
+            sprite,
+            screenX - width/2,
+            screenY - height/2,
+            width,
+            height
+        );
+    }
     
     // Draw health bar
     const healthBarWidth = size/2;
