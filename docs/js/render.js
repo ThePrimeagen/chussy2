@@ -19,25 +19,29 @@ export function drawWalls(ctx, player, canvas) {
     const numRays = canvas.width;
     const rayStep = player.fov / numRays;
     
+    // Pre-calculate color maps for better performance
+    const colorMaps = [
+        { hue: 0, sat: 70, light: 50 },    // Red
+        { hue: 120, sat: 70, light: 50 },  // Green
+        { hue: 240, sat: 70, light: 50 },  // Blue
+        { hue: 60, sat: 70, light: 50 },   // Yellow
+        { hue: 300, sat: 70, light: 50 }   // Purple
+    ];
+    
+    // Cache time calculation
+    const timeOffset = Math.floor(Date.now() * 0.001) % colorMaps.length;
+    
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Random colormap with animation
-        const timeOffset = Date.now() * 0.001;
-        const colorIndex = Math.floor((i + timeOffset * 50) % 5);
-        const colorMaps = [
-            [255, 0, 0],   // Red
-            [0, 255, 0],   // Green
-            [0, 0, 255],   // Blue
-            [255, 255, 0], // Yellow
-            [255, 0, 255]  // Magenta
-        ];
-        const baseColor = colorMaps[colorIndex];
-        const intensity = Math.min(1, 400/distance);
-        const wallColor = `rgb(${baseColor[0] * intensity}, ${baseColor[1] * intensity}, ${baseColor[2] * intensity})`;
-        const outlineColor = `rgb(${baseColor[0] * intensity * 0.8}, ${baseColor[1] * intensity * 0.8}, ${baseColor[2] * intensity * 0.8})`;
+        // Use pre-calculated colors with smooth transitions
+        const colorIndex = (timeOffset + Math.floor(i / (numRays / colorMaps.length))) % colorMaps.length;
+        const color = colorMaps[colorIndex];
+        const intensity = Math.min(100, (400/distance));
+        const wallColor = `hsl(${color.hue}, ${color.sat}%, ${intensity}%)`;
+        const outlineColor = `hsl(${color.hue}, ${color.sat}%, ${intensity * 0.8}%)`;
         
         // Draw wall with outline for depth
         ctx.fillStyle = wallColor;
