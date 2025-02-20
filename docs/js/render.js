@@ -21,19 +21,33 @@ export function drawWalls(ctx, player, canvas) {
     
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
-        const distance = castRay(rayAngle, player.x, player.y);
-        const wallHeight = canvas.height / distance;
+        const rayResult = castRay(rayAngle, player.x, player.y);
+        const wallHeight = canvas.height / rayResult.distance;
         
-        // Use cool colors for walls with better depth perception
-        const baseIntensity = Math.min(255, (400/distance));
-        const wallColor = `rgb(${baseIntensity * 0.8}, ${baseIntensity * 0.4}, ${baseIntensity * 0.6})`;
-        const outlineColor = `rgb(${baseIntensity * 0.6}, ${baseIntensity * 0.3}, ${baseIntensity * 0.5})`;
+        // Enhanced wall shading based on side and distance
+        const baseIntensity = Math.min(255, (400/rayResult.distance));
+        let wallColor;
         
-        // Draw wall with outline for depth
+        if (rayResult.side === 0) {
+            // Vertical walls (X-axis collision)
+            wallColor = `rgb(${baseIntensity * 0.9}, ${baseIntensity * 0.5}, ${baseIntensity * 0.7})`;
+        } else {
+            // Horizontal walls (Y-axis collision)
+            wallColor = `rgb(${baseIntensity * 0.7}, ${baseIntensity * 0.3}, ${baseIntensity * 0.5})`;
+        }
+        
+        // Draw wall with enhanced depth effect
+        const wallY = (canvas.height - wallHeight) / 2;
         ctx.fillStyle = wallColor;
-        ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
-        ctx.strokeStyle = outlineColor;
-        ctx.strokeRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
+        ctx.fillRect(i, wallY, 1, wallHeight);
+        
+        // Add subtle vertical gradient for depth
+        const gradient = ctx.createLinearGradient(i, wallY, i, wallY + wallHeight);
+        gradient.addColorStop(0, `rgba(0,0,0,0.2)`);
+        gradient.addColorStop(0.5, `rgba(0,0,0,0)`);
+        gradient.addColorStop(1, `rgba(0,0,0,0.2)`);
+        ctx.fillStyle = gradient;
+        ctx.fillRect(i, wallY, 1, wallHeight);
     }
 }
 
