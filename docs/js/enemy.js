@@ -37,14 +37,6 @@ export function updateEnemies(state, player) {
                 const newX = enemy.x + (dx / dist) * 0.03;
                 const newY = enemy.y + (dy / dist) * 0.03;
                 
-                if (dist < 0.5) {
-                    state.player.health = Math.max(0, state.player.health - 0.5);
-                    if (state.player.health <= 0) {
-                        state.gameOver = true;
-                        return;
-                    }
-                }
-                
                 if (!checkWallCollision(newX, newY)) {
                     enemy.x = newX;
                     enemy.y = newY;
