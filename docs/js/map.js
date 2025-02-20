@@ -1,4 +1,5 @@
 import { GAME_CONFIG } from './utils.js';
+import { player } from './player.js';
 
 export const MAP = [
     [1,1,1,1,1,1,1,1,1,1,1,1],
