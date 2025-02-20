@@ -104,7 +104,9 @@ export async function loadSprite(spriteName) {
     if (spriteName === 'BULLET') {
         sprite = GAME_CONFIG.SPRITES.BULLET;
     } else if (spriteName.startsWith('ENEMY_')) {
-        sprite = GAME_CONFIG.SPRITES.ENEMIES[spriteName];
+        const index = parseInt(spriteName.split('_')[1]) - 1;
+        spriteCache[spriteName] = generateAnimeSprite(index);
+        return spriteCache[spriteName];
     } else if (spriteName.startsWith('CHEESE_')) {
         sprite = GAME_CONFIG.SPRITES.COLLECTIBLES[spriteName];
     }
