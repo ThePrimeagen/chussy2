@@ -91,9 +91,11 @@
             x: 1.5,
             y: 1.5,
             angle: 0,
-            fov: Math.PI / 3,
-            speed: 0.15,  // Increased speed for smoother movement
-            turnSpeed: 0.12  // Increased turn speed for better control
+            fov: Math.PI / 2.5,  // Wider field of view
+            speed: 0.15,
+            turnSpeed: 0.12,
+            health: 100,
+            maxHealth: 100
         };
 
         const canvas = document.getElementById('gameCanvas');
@@ -249,7 +251,51 @@
 
         function drawFrame() {
             updateAutoplay();
-            // Rest of drawFrame code...
+            
+            // Clear screen with dark gradient for atmosphere
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#000');
+            gradient.addColorStop(1, '#111');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw floor
+            const floorGradient = ctx.createLinearGradient(0, canvas.height/2, 0, canvas.height);
+            floorGradient.addColorStop(0, '#222');
+            floorGradient.addColorStop(1, '#111');
+            ctx.fillStyle = floorGradient;
+            ctx.fillRect(0, canvas.height/2, canvas.width, canvas.height/2);
+            
+            // Optimize raycasting
+            const numRays = Math.floor(canvas.width / 2);
+            const rayStep = player.fov / numRays;
+            
+            for (let i = 0; i < numRays; i++) {
+                const rayAngle = player.angle - player.fov/2 + rayStep * i;
+                const distance = castRay(rayAngle);
+                const wallHeight = canvas.height / distance;
+                
+                // Add depth and texture effect
+                const brightness = Math.min(255, Math.floor(255 / (distance * 0.5)));
+                const wallGradient = ctx.createLinearGradient(i*2, (canvas.height-wallHeight)/2, i*2, (canvas.height+wallHeight)/2);
+                wallGradient.addColorStop(0, `rgb(${brightness},${brightness/2},0)`);
+                wallGradient.addColorStop(0.5, `rgb(${brightness},${brightness/3},0)`);
+                wallGradient.addColorStop(1, `rgb(${brightness/2},${brightness/4},0)`);
+                
+                ctx.fillStyle = wallGradient;
+                ctx.fillRect(i*2, (canvas.height-wallHeight)/2, 2, wallHeight);
+            }
+            
+            // Draw projectiles
+            ctx.fillStyle = '#ff0';
+            state.projectiles.forEach(proj => {
+                const screenX = (proj.x - player.x) * 50 + canvas.width/2;
+                const screenY = (proj.y - player.y) * 50 + canvas.height/2;
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
             requestAnimationFrame(drawFrame);
         }
 
