@@ -37,6 +37,8 @@ export function updateCollectibles(state, player) {
             cheese.collected = true;
             if (!state.score) state.score = 0;
             state.score += 100;
+            // Heal player when collecting cheese
+            player.health = Math.min(player.maxHealth, player.health + 25);
         }
     });
 }
