@@ -112,9 +112,15 @@ export function gameLoop(timestamp) {
         });
     }
     
+    // Check player health before enemy updates
     if (state.player.health <= 0) {
         handlePlayerDeath();
         return;
+    }
+    
+    // Add damage cooldown to prevent instant death
+    if (!state.player.lastDamaged || Date.now() - state.player.lastDamaged > 1000) {
+        state.player.canTakeDamage = true;
     }
     
     drawArms(ctx, player, canvas);

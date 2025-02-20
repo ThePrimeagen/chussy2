@@ -63,9 +63,12 @@ export function updateEnemies(state, player) {
             const dy = player.y - enemy.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             
-            // Remove enemy on collision
+            // Deal damage to player on collision
             if (dist < 0.5) {
-                state.enemies.splice(i, 1);
+                state.player.health -= 10;  // Deal 10 damage per hit
+                // Push player back slightly
+                state.player.x -= dx * 0.1;
+                state.player.y -= dy * 0.1;
                 continue;
             }
             
