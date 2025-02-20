@@ -34,8 +34,7 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Ładowanie zasobów
-const FISH_SPRITE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKUSURBVFiF7ZdNaBNBFMd/s9mkTWqSJk1JW7QqVkWkKB5E/LiIBz0IHhQP4smDFBE96NGDiCBeRPCgICIePCh4EDyJKCLiQaqCn1Vr1TaxX2natGmbNLvjYZNQapKNwYvgf9h9M/P+v5n3ZnYXYmJiYmJi/jFCVJGxgQutLqt1QEF0KKDVg9MBhgaGBgt+0F0Q8MHrg4U5WJiHOQ/4QqJnGXwB8C/7cblcRQKaptWsr6tpQwfg9kDfEehsg+5OaG8Fu6263vRnmPLAu0/w8j28eAsTn8DnD4VFUcxqmhbUdd0kSZJRIVAUBYfDEVHsdMDxI3DyGBzYA4oSWby1GY7sgxMDkJmHp6/h0XOYmQNVVc2qqpbVxWAwGNzc3KxrmsZGxe6dMD4Kj27A+cHw4rXY2QaXhmFqAq4OQ0dbKLZly5b1/0QgEMDpdEYU7+2Gx7fg7jXY01V//M52uH8dHt6E/T3rx202W1ldVVUxm81/JGDRYP8eePcE7l2HzraNz7OrA+5ehwf5cPZQyJvNZkRRLBNQFAWLxVJ3YLMZTh+HyXG4NQItTRvPvxaXE26PwtvHcG4QrFYriqKU1SVJQpblugI2K1wcgk9P4MoFaLJvbvHvabLDtQswPQ6XhsFmtSLLMoqilAkEg0Hs9sgXpd0Gly/A7DhcPgeODSxc9/PrAq4Mw+cJuDgEDrsNWZYJBoNldUmSEASh7gQAkoNw/Qh8fR7e5/U2YiP6jXDqIPyYhLPHQRAEJEkqq5tMJrxeL4ZhRJ6gqRFujMBMBvp6N79wbxdkH8KFDDA0UPf5EEURn8+HYRhlAoqiYLVasVgsUcVNDZAIL7jxb0IQBERRxOfzoes6APJvjT9e8/8RQRBQVZVAIABALBATExMT8z/zC1vqIVMI2EIJAAAAAElFTkSuQmCC';
-const TACO_SPRITE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKUSURBVFiF7ZdNaBNBFMd/s9mkTWqSJk1JW7QqVkWkKB5E/LiIBz0IHhQP4smDFBE96NGDiCBeRPCgICIePCh4EDyJKCLiQaqCn1Vr1TaxX2natGmbNLvjYZNQapKNwYvgf9h9M/P+v5n3ZnYXYmJiYmJi/jFCVJGxgQutLqt1QEF0KKDVg9MBhgaGBgt+0F0Q8MHrg4U5WJiHOQ/4QqJnGXwB8C/7cblcRQKaptWsr6tpQwfg9kDfEehsg+5OaG8Fu6263vRnmPLAu0/w8j28eAsTn8DnD4VFUcxqmhbUdd0kSZJRIVAUBYfDEVHsdMDxI3DyGBzYA4oSWby1GY7sgxMDkJmHp6/h0XOYmQNVVc2qqpbVxWAwGNzc3KxrmsZGxe6dMD4Kj27A+cHw4rXY2QaXhmFqAq4OQ0dbKLZly5b1/0QgEMDpdEYU7+2Gx7fg7jXY01V//M52uH8dHt6E/T3rx202W1ldVVUxm81/JGDRYP8eePcE7l2HzraNz7OrA+5ehwf5cPZQyJvNZkRRLBNQFAWLxVJ3YLMZTh+HyXG4NQItTRvPvxaXE26PwtvHcG4QrFYriqKU1SVJQpblugI2K1wcgk9P4MoFaLJvbvHvabLDtQswPQ6XhsFmtSLLMoqilAkEg0Hs9sgXpd0Gly/A7DhcPgeODSxc9/PrAq4Mw+cJuDgEDrsNWZYJBoNldUmSEASh7gQAkoNw/Qh8fR7e5/U2YiP6jXDqIPyYhLPHQRAEJEkqq5tMJrxeL4ZhRJ6gqRFujMBMBvp6N79wbxdkH8KFDDA0UPf5EEURn8+HYRhlAoqiYLVasVgsUcVNDZAIL7jxb0IQBERRxOfzoes6APJvjT9e8/8RQRBQVZVAIABALBATExMT8z/zC1vqIVMI2EIJAAAAAElFTkSuQmCC';
+const MUSTACHE_SPRITE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKUSURBVFiF7ZdNaBNBFMd/s9mkTWqSJk1JW7QqVkWkKB5E/LiIBz0IHhQP4smDFBE96NGDiCBeRPCgICIePCh4EDyJKCLiQaqCn1Vr1TaxX2natGmbNLvjYZNQapKNwYvgf9h9M/P+v5n3ZnYXYmJiYmJi/jFCVJGxgQutLqt1QEF0KKDVg9MBhgaGBgt+0F0Q8MHrg4U5WJiHOQ/4QqJnGXwB8C/7cblcRQKaptWsr6tpQwfg9kDfEehsg+5OaG8Fu6263vRnmPLAu0/w8j28eAsTn8DnD4VFUcxqmhbUdd0kSZJRIVAUBYfDEVHsdMDxI3DyGBzYA4oSWby1GY7sgxMDkJmHp6/h0XOYmQNVVc2qqpbVxWAwGNzc3KxrmsZGxe6dMD4Kj27A+cHw4rXY2QaXhmFqAq4OQ0dbKLZly5b1/0QgEMDpdEYU7+2Gx7fg7jXY01V//M52uH8dHt6E/T3rx202W1ldVVUxm81/JGDRYP8eePcE7l2HzraNz7OrA+5ehwf5cPZQyJvNZkRRLBNQFAWLxVJ3YLMZTh+HyXG4NQItTRvPvxaXE26PwtvHcG4QrFYriqKU1SVJQpblugI2K1wcgk9P4MoFaLJvbvHvabLDtQswPQ6XhsFmtSLLMoqilAkEg0Hs9sgXpd0Gly/A7DhcPgeODSxc9/PrAq4Mw+cJuDgEDrsNWZYJBoNldUmSEASh7gQAkoNw/Qh8fR7e5/U2YiP6jXDqIPyYhLPHQRAEJEkqq5tMJrxeL4ZhRJ6gqRFujMBMBvp6N79wbxdkH8KFDDA0UPf5EEURn8+HYRhlAoqiYLVasVgsUcVNDZAIL7jxb0IQBERRxOfzoes6APJvjT9e8/8RQRBQVZVAIABALBATExMT8z/zC1vqIVMI2EIJAAAAAElFTkSuQmCC';
 const CHEESE_SPRITE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGUlEQVQYV2P8z8Dwn4EAYBxVQEgBNs0gDQBn4gQJE+ZTogAAAABJRU5ErkJggg==';
 
 state.player.sprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGUlEQVQYV2NkYGD4z4AHMP7//x8/BYyjAQCmBQYNBzg8PQAAAABJRU5ErkJggg==';
@@ -50,14 +49,14 @@ function spawnEnemy() {
         case 2: x = Math.random() * canvas.width; y = canvas.height + 32; break;
         case 3: x = -32; y = Math.random() * canvas.height; break;
     }
-    const animeGirl = new Image();
-    animeGirl.src = Math.random() > 0.5 ? FISH_SPRITE : TACO_SPRITE;
+    const mustacheEnemy = new Image();
+    mustacheEnemy.src = MUSTACHE_SPRITE;
     state.enemies.push({ 
         x, 
         y, 
-        speed: 2,
-        sprite: animeGirl,
-        catchphrase: ["Got DEEZ NUTS!", "Smell DEEZ NUTS!", "Want DEEZ NUTS?", "GOTTEM!"][Math.floor(Math.random() * 4)]
+        speed: 3,
+        sprite: mustacheEnemy,
+        catchphrase: ["MUSTACHE POWER!", "FEAR THE 'STACHE!", "MUSTACHE ATTACK!", "BEHOLD MY GLORIOUS MUSTACHE!"][Math.floor(Math.random() * 4)]
     });
 }
 
@@ -70,6 +69,20 @@ function spawnCoin() {
 }
 
 function updateGame() {
+    // Update enemy positions to chase player
+    if (state.enemies) {
+        state.enemies.forEach(enemy => {
+            const dx = state.player.x - enemy.x;
+            const dy = state.player.y - enemy.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance > 0) {
+                enemy.x += (dx / distance) * enemy.speed;
+                enemy.y += (dy / distance) * enemy.speed;
+            }
+        });
+    }
+
     // Aktualizacja obrotu gracza z płynnym skrętem
     if (state.keys.turnLeft) state.player.angle -= state.player.turnSpeed;
     if (state.keys.turnRight) state.player.angle += state.player.turnSpeed;
@@ -153,13 +166,20 @@ function drawGame() {
     ctx.drawImage(state.player.sprite, state.player.x - 16, state.player.y - 16);
     ctx.shadowBlur = 0;
 
-    // Draw enemies with synchronized RGB shadows
+    // Draw enemies with synchronized RGB shadows and make them BIGGER
     if (state.enemies && Array.isArray(state.enemies)) {
         state.enemies.forEach(enemy => {
             if (enemy && enemy.sprite) {
                 ctx.shadowColor = state.currentShadowColor;
                 ctx.shadowBlur = 70;
-                ctx.drawImage(enemy.sprite, enemy.x - 32, enemy.y - 32, 64, 64);
+                // Draw them twice as big!
+                ctx.drawImage(enemy.sprite, enemy.x - 64, enemy.y - 64, 128, 128);
+                
+                // Draw their catchphrase
+                ctx.font = '16px "Press Start 2P"';
+                ctx.fillStyle = '#ff4400';
+                ctx.textAlign = 'center';
+                ctx.fillText(enemy.catchphrase, enemy.x, enemy.y - 80);
                 ctx.shadowBlur = 0;
             }
         });
@@ -187,10 +207,12 @@ function drawGame() {
 // Input handling
 window.addEventListener('keydown', e => {
     switch(e.key) {
-        case 'w': state.player.y -= 5; break;
-        case 's': state.player.y += 5; break;
-        case 'a': state.player.x -= 5; break;
-        case 'd': state.player.x += 5; break;
+        case 'w': state.keys.forward = true; break;
+        case 's': state.keys.backward = true; break;
+        case 'a': state.keys.strafeLeft = true; break;
+        case 'd': state.keys.strafeRight = true; break;
+        case 'ArrowLeft': state.keys.turnLeft = true; break;
+        case 'ArrowRight': state.keys.turnRight = true; break;
         case 'Shift': state.keys.sprint = true; break;
     }
     e.preventDefault(); // Prevent default browser scrolling
@@ -227,7 +249,8 @@ function gameLoop() {
 }
 
 // Spawn enemies and coins periodically
-setInterval(spawnEnemy, 3000);
+// Spawn enemies more frequently for more MUSTACHE POWER!
+setInterval(spawnEnemy, 2000);
 setInterval(spawnCoin, 5000);
 
 // Start game
