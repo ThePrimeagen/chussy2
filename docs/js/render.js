@@ -54,7 +54,7 @@ export function drawWalls(ctx, player, canvas) {
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Draw brick wall with shading based on distance
+        // Draw brick wall with depth of field and shading
         const shade = Math.max(0.4, 1 - distance / 15);
         const color = wallColors[i];
         if (color === mortarColor) {
@@ -62,7 +62,12 @@ export function drawWalls(ctx, player, canvas) {
         } else {
             ctx.fillStyle = `rgba(139, 37, 0, ${shade})`;
         }
+        
+        // Apply depth of field blur effect
+        const blurAmount = Math.min(5, Math.max(0, distance - 3) / 2);
+        ctx.filter = `blur(${blurAmount}px)`;
         ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
+        ctx.filter = 'none';
     }
 }
 
@@ -125,8 +130,9 @@ export function drawMinimap(minimapCtx, state, player) {
             const dx = enemy.x - player.x;
             const dy = enemy.y - player.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            const blurAmount = Math.min(3, distance / 3);
             
+            // Enhanced depth of field effect for enemies
+            const blurAmount = Math.min(5, Math.max(0, distance - 2) / 2);
             ctx.filter = `blur(${blurAmount}px)`;
             ctx.fillStyle = '#ff0000';
             ctx.beginPath();
