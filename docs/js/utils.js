@@ -4,6 +4,7 @@ export const GAME_CONFIG = {
     TILE_SIZE: 32,
     PLAYER_SPEED: 0.0035,  // *WHIRR* PRECISE MOVEMENT ENGAGED! 🤖
     ENEMY_SPEED: 2,
+    DUCK_SPEED: 0.05,
     SPAWN_INTERVAL: 2000,
     FOV: Math.PI / 3,
     PATHFINDING: {
@@ -15,6 +16,13 @@ export const GAME_CONFIG = {
         GUNSHOT: 'data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'
     },
     SPRITES: {
+        DUCKS: {
+            NORMAL: { src: 'sprites/duck_normal.png', width: 32, height: 32 },
+            GOLDEN: { src: 'sprites/duck_golden.png', width: 32, height: 32 },
+            RAINBOW: { src: 'sprites/duck_rainbow.png', width: 32, height: 32 },
+            CYBER: { src: 'sprites/duck_cyber.png', width: 32, height: 32 },
+            NINJA: { src: 'sprites/duck_ninja.png', width: 32, height: 32 }
+        },
         COLLECTIBLES: {
             CHEESE_1: { src: 'sprites/cheese_1.png', width: 32, height: 32 },
             CHEESE_2: { src: 'sprites/cheese_2.png', width: 32, height: 32 },

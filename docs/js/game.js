@@ -4,6 +4,7 @@ import { updateEnemies, renderEnemy, spawnEnemy } from './enemy.js';
 import { updateCollectibles, renderCollectibles, spawnCheese } from './collectibles.js';
 import { drawWalls, drawHUD, drawArms, drawMinimap } from './render.js';
 import { setupInputHandlers, keys, updateAutoplay } from './input.js';
+import { spawnDuck, updateDucks, renderDuck, duckTypes } from './ducks.js';
 
 // Canvas contexts
 let canvas = null;
@@ -42,6 +43,8 @@ export const state = {
     projectiles: [],
     enemies: [],
     collectibles: [],
+    ducks: [],
+    coins: 0,
     score: 0,
     gameOver: false,
     lastShot: 0,
@@ -130,9 +133,17 @@ export function gameLoop(timestamp) {
         updateEnemies(state, player);
     }
     updateCollectibles(state, player);
+    updateDucks(state, player);
     updateAutoplay(state, player);
     
     drawMinimap(minimapCtx, state, player);
+    
+    // Render ducks
+    if (state.ducks) {
+        state.ducks.forEach(duck => {
+            renderDuck(ctx, duck, player, canvas);
+        });
+    }
     
     requestAnimationFrame(gameLoop);
 }
@@ -141,8 +152,11 @@ export function gameLoop(timestamp) {
 initializeCanvases();
 setupInputHandlers(state);
 
-// Spawn initial cheese
+// Spawn initial cheese and ducks
 spawnCheese(state);
+spawnDuck(state, duckTypes.NORMAL);
+spawnDuck(state, duckTypes.GOLDEN);
+spawnDuck(state, duckTypes.RAINBOW);
 
 // Cache enemy check and reduce spawn frequency
 const MAX_ENEMIES = 5;
