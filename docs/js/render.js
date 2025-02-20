@@ -42,7 +42,7 @@ export function drawWalls(ctx, player, canvas) {
         { hue: 300, sat: 70, light: 50 }   // Purple
     ];
     
-    // Reuse timeOffset for color cycling
+    // Update timeOffset for color cycling
     timeOffset = Math.floor(Date.now() * 0.001) % colorMaps.length;
     
     for (let i = 0; i < numRays; i++) {
