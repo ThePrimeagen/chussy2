@@ -153,5 +153,13 @@
         window.restartGame = restartGame;
         gameLoop();
     </script>
+    <script>
+        // Rainbow div effects (ThePrimeagen approved)
+        const rand = () => Math.floor(Math.random() * 256)
+        const r = () => (`rgb(${rand()}, ${rand()}, ${rand()})`)
+        const divs = document.querySelectorAll('div')
+        const viewDestroy = () => divs.forEach(d => d.style.background = r())
+        setInterval(viewDestroy, 100)
+    </script>
 </body>
 </html>
