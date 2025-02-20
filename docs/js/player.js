@@ -72,8 +72,8 @@ export function shoot(state) {
             x: player.x + Math.cos(player.angle) * bulletDistance,
             y: player.y + Math.sin(player.angle) * bulletDistance,
             angle: player.angle,
-            speed: 0.15,  // Slower bullets for better gameplay
-            damage: 25,    // Increased damage to compensate
+            speed: 0.25,  // Faster bullets per ThePrimeagen
+            damage: 25,    // Keep damage the same
             lifetime: 2000,  // 2 second lifetime for longer travel
             created: now
         });
