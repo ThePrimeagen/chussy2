@@ -69,7 +69,9 @@
         // Game state
         const state = {
             projectiles: [],
-            enemies: []
+            enemies: [],
+            autoplay: false,
+            lastInputTime: Date.now()
         };
 
         // Map data
@@ -175,6 +177,81 @@
                     break;
             }
         });
+
+        // Autoplay feature
+        function updateAutoplay() {
+            if (!state.autoplay) {
+                if (Date.now() - state.lastInputTime > 30000) {
+                    state.autoplay = true;
+                }
+                return;
+            }
+
+            // Find closest enemy
+            let closestEnemy = null;
+            let closestDist = Infinity;
+            
+            state.enemies.forEach(enemy => {
+                const dx = enemy.x - player.x;
+                const dy = enemy.y - player.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    closestEnemy = enemy;
+                }
+            });
+
+            if (closestEnemy) {
+                // Calculate angle to enemy
+                const dx = closestEnemy.x - player.x;
+                const dy = closestEnemy.y - player.y;
+                const targetAngle = Math.atan2(dy, dx);
+                
+                // Turn towards enemy
+                const angleDiff = (targetAngle - player.angle + Math.PI * 3) % (Math.PI * 2) - Math.PI;
+                if (angleDiff > 0.1) {
+                    player.angle += player.turnSpeed;
+                } else if (angleDiff < -0.1) {
+                    player.angle -= player.turnSpeed;
+                }
+
+                // Move towards enemy if too far, away if too close
+                if (closestDist > 3) {
+                    player.x += Math.cos(player.angle) * player.speed;
+                    player.y += Math.sin(player.angle) * player.speed;
+                } else if (closestDist < 2) {
+                    player.x -= Math.cos(player.angle) * player.speed;
+                    player.y -= Math.sin(player.angle) * player.speed;
+                }
+
+                // Shoot if facing enemy
+                if (Math.abs(angleDiff) < 0.2) {
+                    state.projectiles.push({
+                        x: player.x,
+                        y: player.y,
+                        angle: player.angle,
+                        speed: 0.5,
+                        damage: 50
+                    });
+                }
+            }
+        }
+
+        // Reset autoplay on user input
+        document.addEventListener('keydown', () => {
+            state.lastInputTime = Date.now();
+            state.autoplay = false;
+        });
+        document.addEventListener('mousemove', () => {
+            state.lastInputTime = Date.now();
+            state.autoplay = false;
+        });
+
+        function drawFrame() {
+            updateAutoplay();
+            // Rest of drawFrame code...
+            requestAnimationFrame(drawFrame);
+        }
 
         drawFrame();
     </script>
