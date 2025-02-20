@@ -117,6 +117,40 @@ export function gameLoop(timestamp) {
         return;
     }
     
+    // Update and render projectiles
+    if (state.projectiles) {
+        const now = Date.now();
+        state.projectiles = state.projectiles.filter(projectile => {
+            // Update position
+            projectile.x += Math.cos(projectile.angle) * projectile.speed;
+            projectile.y += Math.sin(projectile.angle) * projectile.speed;
+            
+            // Check wall collision
+            if (checkWallCollision(projectile.x, projectile.y)) {
+                return false;
+            }
+            
+            // Check lifetime
+            if (now - projectile.created > projectile.lifetime) {
+                return false;
+            }
+            
+            // Render bullet
+            ctx.fillStyle = '#ffff00';  // Bright yellow bullets
+            ctx.beginPath();
+            ctx.arc(
+                (Math.tan(projectile.angle - player.angle) + 1) * canvas.width / 2,
+                canvas.height / 2,
+                4,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+            
+            return true;
+        });
+    }
+    
     drawArms(ctx, player, canvas);
     drawHUD(ctx, state);
     

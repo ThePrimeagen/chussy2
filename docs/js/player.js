@@ -66,11 +66,15 @@ export function updatePlayerMovement(keys) {
 export function shoot(state) {
     const now = Date.now();
     if (now - state.lastShot >= state.shootCooldown) {
+        // Create bullet with travel time and proper origin
         state.projectiles.push({
             x: player.x,
             y: player.y,
             angle: player.angle,
-            speed: 0.5
+            speed: 0.15,  // Slower for visible travel time
+            damage: 20,
+            lifetime: 2000,  // Bullets exist for 2 seconds
+            created: now
         });
         state.lastShot = now;
     }
