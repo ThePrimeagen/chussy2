@@ -33,25 +33,35 @@ export function drawWalls(ctx, player, canvas) {
     const numRays = canvas.width;
     const rayStep = player.fov / numRays;
     
-    // Rainbow wall effect
-    const rand = () => Math.floor(Math.random() * 256);
-    const r = () => `rgb(${rand()}, ${rand()}, ${rand()})`;
-    let wallColors = Array(numRays).fill().map(() => r());
+    // Red brick wall texture effect
+    const brickColor = '#8B2500';  // Dark red for bricks
+    const mortarColor = '#808080';  // Gray for mortar
+    const brickHeight = 20;  // Height of each brick row
+    const brickWidth = 40;   // Width of each brick
     
-    // Update colors every 100ms
-    if (!window.wallColorInterval) {
-        window.wallColorInterval = setInterval(() => {
-            wallColors = Array(numRays).fill().map(() => r());
-        }, 100);
-    }
+    // Pre-calculate brick pattern
+    let wallColors = Array(numRays).fill().map((_, i) => {
+        const row = Math.floor((i / brickWidth)) % 2;
+        const isMortar = (i % brickWidth < 2) || (Math.floor(i / brickHeight) % brickHeight < 2);
+        // Offset every other row by half a brick
+        const offsetX = row * (brickWidth / 2);
+        const adjustedI = (i + offsetX) % brickWidth;
+        return (adjustedI < 2 || isMortar) ? mortarColor : brickColor;
+    });
     
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Use random colors from wallColors array
-        ctx.fillStyle = wallColors[i];
+        // Draw brick wall with shading based on distance
+        const shade = Math.max(0.4, 1 - distance / 15);
+        const color = wallColors[i];
+        if (color === mortarColor) {
+            ctx.fillStyle = `rgba(128, 128, 128, ${shade})`;
+        } else {
+            ctx.fillStyle = `rgba(139, 37, 0, ${shade})`;
+        }
         ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
     }
 }
@@ -108,14 +118,21 @@ export function drawMinimap(minimapCtx, state, player) {
     );
     ctx.stroke();
     
-    // Draw enemies
+    // Draw enemies with depth of field
     if (state.enemies && Array.isArray(state.enemies)) {
         state.enemies.forEach(enemy => {
             if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') return;
+            const dx = enemy.x - player.x;
+            const dy = enemy.y - player.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const blurAmount = Math.min(3, distance / 3);
+            
+            ctx.filter = `blur(${blurAmount}px)`;
             ctx.fillStyle = '#ff0000';
             ctx.beginPath();
             ctx.arc(enemy.x * tileSize, enemy.y * tileSize, tileSize/2, 0, Math.PI * 2);
             ctx.fill();
+            ctx.filter = 'none';
         });
     }
 }
