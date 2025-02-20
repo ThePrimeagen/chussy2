@@ -12,7 +12,7 @@ export function drawWalls(ctx, player, canvas) {
 
     // Animate twinkling stars
     const starCount = 100;
-    const timeOffset = Date.now() * 0.001;
+    let timeOffset = Date.now() * 0.001;
     for (let i = 0; i < starCount; i++) {
         const x = Math.sin(i * 567.5) * canvas.width;
         const y = Math.cos(i * 321.7) * canvas.height/2;
