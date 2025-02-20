@@ -33,25 +33,15 @@ export function drawWalls(ctx, player, canvas) {
     const numRays = canvas.width;
     const rayStep = player.fov / numRays;
     
-    // Rainbow wall effect
-    const rand = () => Math.floor(Math.random() * 256);
-    const r = () => `rgb(${rand()}, ${rand()}, ${rand()})`;
-    let wallColors = Array(numRays).fill().map(() => r());
-    
-    // Update colors every 100ms
-    if (!window.wallColorInterval) {
-        window.wallColorInterval = setInterval(() => {
-            wallColors = Array(numRays).fill().map(() => r());
-        }, 100);
-    }
-    
+    // Soothing wall colors with subtle gradient
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Use random colors from wallColors array
-        ctx.fillStyle = wallColors[i];
+        // Create a soothing blue-gray gradient based on distance
+        const intensity = Math.min(255, 180 + (distance * 10));
+        ctx.fillStyle = `rgb(${intensity-40}, ${intensity-20}, ${intensity})`;
         ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
     }
 }
