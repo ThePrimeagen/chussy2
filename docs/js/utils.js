@@ -46,3 +46,21 @@ export function worldToScreen(x, y, playerX, playerY, playerAngle, canvas) {
     const size = canvas.height / distance;
     return { screenX, screenY, size, distance };
 }
+
+export const spriteCache = {};
+
+export async function loadSprite(spriteName) {
+    if (spriteCache[spriteName]) return spriteCache[spriteName];
+    
+    const sprite = GAME_CONFIG.SPRITES.ENEMIES[spriteName];
+    const img = new Image();
+    img.src = sprite.src;
+    
+    return new Promise((resolve, reject) => {
+        img.onload = () => {
+            spriteCache[spriteName] = img;
+            resolve(img);
+        };
+        img.onerror = reject;
+    });
+}
