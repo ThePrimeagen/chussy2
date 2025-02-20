@@ -90,7 +90,8 @@
             y: 1.5,
             angle: 0,
             fov: Math.PI / 3,
-            speed: 0.1
+            speed: 0.15,  // Increased speed for smoother movement
+            turnSpeed: 0.12  // Increased turn speed for better control
         };
 
         const canvas = document.getElementById('gameCanvas');
@@ -122,10 +123,15 @@
         }
 
         function drawFrame() {
-            ctx.fillStyle = '#000';
+            // Clear screen with dark gradient for atmosphere
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#000');
+            gradient.addColorStop(1, '#111');
+            ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            const numRays = canvas.width;
+            // Optimize raycasting
+            const numRays = Math.floor(canvas.width / 2); // Reduced for better performance
             const rayStep = player.fov / numRays;
             
             for (let i = 0; i < numRays; i++) {
@@ -152,13 +158,20 @@
                     player.y -= Math.sin(player.angle) * player.speed;
                     break;
                 case 'a':
-                    player.angle -= 0.1;
+                    player.angle -= player.turnSpeed;
                     break;
                 case 'd':
-                    player.angle += 0.1;
+                    player.angle += player.turnSpeed;
                     break;
                 case ' ':
-                    // Shooting mechanic
+                    // Enhanced shooting mechanic
+                    state.projectiles.push({
+                        x: player.x,
+                        y: player.y,
+                        angle: player.angle,
+                        speed: 0.5,
+                        damage: 50
+                    });
                     break;
             }
         });
