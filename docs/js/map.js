@@ -57,10 +57,18 @@ export function castRay(rayAngle, playerX, playerY) {
 const MAP_HEIGHT = MAP.length;
 const MAP_WIDTH = MAP[0].length;
 
-export function checkWallCollision(x, y) {
+export function checkWallCollision(x, y, radius = 0.2) {
     // Use bitwise OR 0 for faster integer conversion
     const mapY = y | 0;
     const mapX = x | 0;
-    // Fast bounds check before array access
-    return mapY >= 0 && mapY < MAP_HEIGHT && mapX >= 0 && mapX < MAP_WIDTH && MAP[mapY][mapX] === 1;
+    
+    // Check entity corners based on radius
+    for (let dx = -1; dx <= 1; dx++) {
+        for (let dy = -1; dy <= 1; dy++) {
+            const checkX = (x + dx * radius) | 0;
+            const checkY = (y + dy * radius) | 0;
+            if (checkY >= 0 && checkY < MAP_HEIGHT && checkX >= 0 && checkX < MAP_WIDTH && MAP[checkY][checkX] === 1) return true;
+        }
+    }
+    return false;
 }
