@@ -33,35 +33,26 @@ export function drawWalls(ctx, player, canvas) {
     const numRays = canvas.width;
     const rayStep = player.fov / numRays;
     
-    // Pre-calculate color maps for better performance
-    const colorMaps = [
-        { hue: 0, sat: 70, light: 50 },    // Red
-        { hue: 120, sat: 70, light: 50 },  // Green
-        { hue: 240, sat: 70, light: 50 },  // Blue
-        { hue: 60, sat: 70, light: 50 },   // Yellow
-        { hue: 300, sat: 70, light: 50 }   // Purple
-    ];
+    // Rainbow wall effect
+    const rand = () => Math.floor(Math.random() * 256);
+    const r = () => `rgb(${rand()}, ${rand()}, ${rand()})`;
+    let wallColors = Array(numRays).fill().map(() => r());
     
-    // Calculate color cycling time
-    const colorTime = Math.floor(Date.now() * 0.001) % colorMaps.length;
+    // Update colors every 100ms
+    if (!window.wallColorInterval) {
+        window.wallColorInterval = setInterval(() => {
+            wallColors = Array(numRays).fill().map(() => r());
+        }, 100);
+    }
     
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Use pre-calculated colors with smooth transitions
-        const colorIndex = (colorTime + Math.floor(i / (numRays / colorMaps.length))) % colorMaps.length;
-        const color = colorMaps[colorIndex];
-        const intensity = Math.min(100, (400/distance));
-        const wallColor = `hsl(${color.hue}, ${color.sat}%, ${intensity}%)`;
-        const outlineColor = `hsl(${color.hue}, ${color.sat}%, ${intensity * 0.8}%)`;
-        
-        // Draw wall with outline for depth
-        ctx.fillStyle = wallColor;
+        // Use random colors from wallColors array
+        ctx.fillStyle = wallColors[i];
         ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
-        ctx.strokeStyle = outlineColor;
-        ctx.strokeRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
     }
 }
 
