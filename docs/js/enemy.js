@@ -13,18 +13,55 @@ export function spawnEnemy(state, playerX, playerY) {
     const maxAttempts = 15;
     
     function isValidSpawnPoint(x, y) {
+        // Check map boundaries
+        if (x < 0 || x >= MAP[0].length || y < 0 || y >= MAP.length) return false;
+        
         // Check immediate position
         if (checkWallCollision(x, y)) return false;
         
         // Check surrounding area
         for (let dx = -MIN_WALL_DISTANCE; dx <= MIN_WALL_DISTANCE; dx += 0.5) {
             for (let dy = -MIN_WALL_DISTANCE; dy <= MIN_WALL_DISTANCE; dy += 0.5) {
-                if (checkWallCollision(x + dx, y + dy)) {
-                    return false;
-                }
+                const checkX = x + dx;
+                const checkY = y + dy;
+                if (checkX < 0 || checkX >= MAP[0].length || checkY < 0 || checkY >= MAP.length) return false;
+                if (checkWallCollision(checkX, checkY)) return false;
             }
         }
-        return true;
+
+        // Validate path to player exists
+        let pathExists = false;
+        const maxPathAttempts = 10;
+        for (let i = 0; i < maxPathAttempts; i++) {
+            let testX = x;
+            let testY = y;
+            let steps = 0;
+            const maxSteps = 50;
+            
+            while (steps < maxSteps) {
+                const dx = playerX - testX;
+                const dy = playerY - testY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (dist < 0.5) {
+                    pathExists = true;
+                    break;
+                }
+                
+                const stepX = testX + (dx / dist) * 0.5;
+                const stepY = testY + (dy / dist) * 0.5;
+                
+                if (checkWallCollision(stepX, stepY)) break;
+                
+                testX = stepX;
+                testY = stepY;
+                steps++;
+            }
+            
+            if (pathExists) break;
+        }
+        
+        return pathExists;
     }
     
     do {
