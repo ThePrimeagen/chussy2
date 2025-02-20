@@ -130,6 +130,20 @@ export function gameLoop(timestamp) {
             
             // Check wall collision
             if (checkWallCollision(projectile.x, projectile.y)) {
+                // Draw wall impact effect
+                const { screenX, screenY, size } = worldToScreen(
+                    projectile.x, projectile.y,
+                    player.x, player.y,
+                    player.angle,
+                    canvas
+                );
+                ctx.save();
+                ctx.globalAlpha = 0.5;
+                ctx.fillStyle = '#ffff00';
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, size * 0.8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
                 return false;
             }
             
@@ -140,6 +154,21 @@ export function gameLoop(timestamp) {
                     const dist = calculateDistance(projectile.x, projectile.y, enemy.x, enemy.y);
                     if (dist < 0.5) {
                         enemy.health -= projectile.damage;
+                        // Draw enemy hit impact effect
+                        const { screenX, screenY, size } = worldToScreen(
+                            enemy.x, enemy.y,
+                            player.x, player.y,
+                            player.angle,
+                            canvas
+                        );
+                        ctx.save();
+                        ctx.globalAlpha = 0.5;
+                        ctx.fillStyle = '#ff0000';
+                        ctx.beginPath();
+                        ctx.arc(screenX, screenY, size, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                        
                         if (enemy.health <= 0) {
                             state.enemies.splice(i, 1);
                         }
