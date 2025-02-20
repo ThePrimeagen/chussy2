@@ -34,5 +34,7 @@ export function castRay(rayAngle, playerX, playerY) {
 }
 
 export function checkWallCollision(x, y) {
-    return MAP[Math.floor(y)][Math.floor(x)] === 1;
+    const mapY = Math.floor(y);
+    const mapX = Math.floor(x);
+    return mapY >= 0 && mapY < MAP.length && mapX >= 0 && mapX < MAP[0].length && MAP[mapY][mapX] === 1;
 }
