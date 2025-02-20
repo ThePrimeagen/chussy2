@@ -284,8 +284,11 @@ setInterval(() => {
     }
 }, 5000);
 
-// Preload enemy sprites and bullet sprite
-Object.keys(GAME_CONFIG.SPRITES.ENEMIES).forEach(async (spriteName) => {
+// Preload enemy sprites, bullet sprite, and collectibles
+[
+    ...Object.keys(GAME_CONFIG.SPRITES.ENEMIES),
+    ...Object.keys(GAME_CONFIG.SPRITES.COLLECTIBLES)
+].forEach(async (spriteName) => {
     try {
         spriteCache[spriteName] = await loadSprite(spriteName);
     } catch (error) {
@@ -300,7 +303,8 @@ async function initGame() {
     try {
         const spritePromises = [
             ...Object.keys(GAME_CONFIG.SPRITES.ENEMIES).map(spriteName => loadSprite(spriteName)),
-            loadSprite('BULLET')
+            loadSprite('BULLET'),
+            ...Object.keys(GAME_CONFIG.SPRITES.COLLECTIBLES).map(spriteName => loadSprite(spriteName))
         ];
         await Promise.all(spritePromises);
         console.log('All sprites loaded successfully');
