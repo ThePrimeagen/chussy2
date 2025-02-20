@@ -8,22 +8,45 @@ export function spawnEnemy(state, playerX, playerY) {
     }
     
     let x, y;
+    const MIN_WALL_DISTANCE = 1.5;
     let attempts = 0;
-    const maxAttempts = 10;
+    const maxAttempts = 15;
+    
+    function isValidSpawnPoint(x, y) {
+        // Check immediate position
+        if (checkWallCollision(x, y)) return false;
+        
+        // Check surrounding area
+        for (let dx = -MIN_WALL_DISTANCE; dx <= MIN_WALL_DISTANCE; dx += 0.5) {
+            for (let dy = -MIN_WALL_DISTANCE; dy <= MIN_WALL_DISTANCE; dy += 0.5) {
+                if (checkWallCollision(x + dx, y + dy)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
     do {
         const angle = Math.random() * Math.PI * 2;
-        const distance = Math.random() * 3 + 3; // Random distance between 3-6 units
+        const distance = Math.random() * 3 + 4; // Spawn between 4-7 units away
         x = playerX + Math.cos(angle) * distance;
         y = playerY + Math.sin(angle) * distance;
         attempts++;
+        
         if (attempts >= maxAttempts) {
-            // If we can't find a valid spawn point, spawn further away
+            // If we can't find a valid spawn point, try further out
             const safeAngle = Math.random() * Math.PI * 2;
-            x = playerX + Math.cos(safeAngle) * 8;
-            y = playerY + Math.sin(safeAngle) * 8;
+            x = playerX + Math.cos(safeAngle) * 10;
+            y = playerY + Math.sin(safeAngle) * 10;
+            if (!isValidSpawnPoint(x, y)) {
+                // If still invalid, use last valid position or default
+                x = playerX + 8;
+                y = playerY + 8;
+            }
             break;
         }
-    } while (checkWallCollision(x, y));
+    } while (!isValidSpawnPoint(x, y));
     
     state.enemies.push({
         x: x,
