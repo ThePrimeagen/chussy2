@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pregnant Banana Landing Page</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .banana {
+            font-size: 8rem;
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .banana:hover {
+            transform: scale(1.1);
+        }
+        .banana::after {
+            content: "🍌";
+            position: absolute;
+            font-size: 2rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .banana.pregnant::after {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div 
+            class="banana" 
+            hx-post="/toggle-pregnancy"
+            hx-trigger="click"
+            hx-swap="class"
+            hx-target="this"
+        >
+            🍌
+        </div>
+        <h1>The Pregnant Banana</h1>
+        <p>Click the banana to reveal its little surprise!</p>
+    </div>
+</body>
+</html>
