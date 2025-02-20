@@ -1,9 +1,10 @@
-import { GAME_CONFIG, loadSprite } from './utils.js';
+import { GAME_CONFIG, loadSprite, calculateDistance, worldToScreen } from './utils.js';
 import { player, updatePlayerMovement, shoot } from './player.js';
 import { updateEnemies, renderEnemy, spawnEnemy } from './enemy.js';
 import { updateCollectibles, renderCollectibles, spawnCheese } from './collectibles.js';
 import { drawWalls, drawHUD, drawArms, drawMinimap } from './render.js';
 import { setupInputHandlers, keys, updateAutoplay } from './input.js';
+import { checkWallCollision } from './map.js';
 
 // Canvas contexts
 let canvas = null;
@@ -130,22 +131,41 @@ export function gameLoop(timestamp) {
                 return false;
             }
             
+            // Check enemy collisions
+            if (state.enemies) {
+                for (let i = state.enemies.length - 1; i >= 0; i--) {
+                    const enemy = state.enemies[i];
+                    const dist = calculateDistance(projectile.x, projectile.y, enemy.x, enemy.y);
+                    if (dist < 0.5) {
+                        enemy.health -= projectile.damage;
+                        if (enemy.health <= 0) {
+                            state.enemies.splice(i, 1);
+                        }
+                        return false;  // Remove bullet on hit
+                    }
+                }
+            }
+            
             // Check lifetime
             if (now - projectile.created > projectile.lifetime) {
                 return false;
             }
             
-            // Render bullet
-            ctx.fillStyle = '#ffff00';  // Bright yellow bullets
-            ctx.beginPath();
-            ctx.arc(
-                (Math.tan(projectile.angle - player.angle) + 1) * canvas.width / 2,
-                canvas.height / 2,
-                4,
-                0,
-                Math.PI * 2
+            // Render bullet using worldToScreen
+            const { screenX, screenY } = worldToScreen(
+                projectile.x, projectile.y,
+                player.x, player.y,
+                player.angle,
+                canvas
             );
-            ctx.fill();
+            
+            // Only render if in view
+            if (screenX >= 0 && screenX <= canvas.width) {
+                ctx.fillStyle = '#ffff00';  // Bright yellow bullets
+                ctx.beginPath();
+                ctx.arc(screenX, screenY, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
             
             return true;
         });

@@ -66,14 +66,15 @@ export function updatePlayerMovement(keys) {
 export function shoot(state) {
     const now = Date.now();
     if (now - state.lastShot >= state.shootCooldown) {
-        // Create bullet with travel time and proper origin
+        // Create bullet from crosshair position
+        const bulletDistance = 0.5;  // Distance in front of player where crosshair is
         state.projectiles.push({
-            x: player.x,
-            y: player.y,
+            x: player.x + Math.cos(player.angle) * bulletDistance,
+            y: player.y + Math.sin(player.angle) * bulletDistance,
             angle: player.angle,
-            speed: 0.15,  // Slower for visible travel time
+            speed: 0.3,  // Increased for better gameplay
             damage: 20,
-            lifetime: 2000,  // Bullets exist for 2 seconds
+            lifetime: 1000,  // Reduced to 1 second for faster gameplay
             created: now
         });
         state.lastShot = now;
