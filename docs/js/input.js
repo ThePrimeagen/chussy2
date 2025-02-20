@@ -1,3 +1,4 @@
+import { worldToScreen } from './enemy.js';
 import { player } from './player.js';
 import { shoot } from './player.js';
 
@@ -91,8 +92,25 @@ export function setupInputHandlers(state) {
         }
     });
     
-    // Add mouse click shooting *BEEP BOOP*
+    // Add mouse click shooting and enemy damage *BEEP BOOP*
     document.addEventListener('click', (e) => {
+        const canvas = document.getElementById('gameCanvas');
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Check if clicked on enemy
+        state.enemies.forEach(enemy => {
+            const { screenX, screenY, size } = worldToScreen(enemy.x, enemy.y, state.player.x, state.player.y, state.player.angle, canvas);
+            const clickDist = Math.sqrt(Math.pow(x - screenX, 2) + Math.pow(y - screenY, 2));
+            if (clickDist < size/4) {
+                enemy.health -= 20;  // Reduce enemy health by 20
+                if (enemy.health <= 0) {
+                    state.enemies = state.enemies.filter(e => e !== enemy);
+                }
+            }
+        });
+        
         shoot(state);
         state.autoplay.enabled = false;
         state.autoplay.lastActivity = Date.now();
