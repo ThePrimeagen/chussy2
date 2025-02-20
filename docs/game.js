@@ -341,6 +341,59 @@ function updateGame() {
     state.player.y = Math.max(GAME_CONFIG.TILE_SIZE, Math.min(canvas.height - GAME_CONFIG.TILE_SIZE, state.player.y));
 }
 
+// Initialize minimap canvas
+const minimapCanvas = document.getElementById('minimapCanvas');
+const minimapCtx = minimapCanvas.getContext('2d');
+minimapCanvas.width = 200;
+minimapCanvas.height = 200;
+
+function drawMinimap() {
+    // Clear minimap
+    minimapCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    minimapCtx.fillRect(0, 0, minimapCanvas.width, minimapCanvas.height);
+    
+    // Calculate scale factors
+    const scaleX = minimapCanvas.width / (state.map.width * GAME_CONFIG.TILE_SIZE);
+    const scaleY = minimapCanvas.height / (state.map.height * GAME_CONFIG.TILE_SIZE);
+    
+    // Draw walls
+    minimapCtx.strokeStyle = '#ff4400';
+    minimapCtx.lineWidth = 1;
+    for (let y = 0; y < state.map.height; y++) {
+        for (let x = 0; x < state.map.width; x++) {
+            if (state.map.tiles[y][x] === 1) {
+                minimapCtx.strokeRect(
+                    x * GAME_CONFIG.TILE_SIZE * scaleX,
+                    y * GAME_CONFIG.TILE_SIZE * scaleY,
+                    GAME_CONFIG.TILE_SIZE * scaleX,
+                    GAME_CONFIG.TILE_SIZE * scaleY
+                );
+            }
+        }
+    }
+    
+    // Draw player (red square)
+    minimapCtx.fillStyle = '#ff0000';
+    minimapCtx.fillRect(
+        state.player.x * scaleX - 4,
+        state.player.y * scaleY - 4,
+        8, 8
+    );
+    
+    // Draw enemies (yellow squares)
+    if (state.enemies && Array.isArray(state.enemies)) {
+        minimapCtx.fillStyle = '#ffff00';
+        state.enemies.forEach(enemy => {
+            if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') return;
+            minimapCtx.fillRect(
+                enemy.x * scaleX - 4,
+                enemy.y * scaleY - 4,
+                8, 8
+            );
+        });
+    }
+}
+
 function drawGame() {
     // Dark background but not too dark
     ctx.fillStyle = '#222';
@@ -585,6 +638,7 @@ function generateMap() {
 function gameLoop() {
     updateGame();
     drawGame();
+    drawMinimap();
     requestAnimationFrame(gameLoop);
 }
 
