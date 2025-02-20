@@ -127,10 +127,10 @@ export function gameLoop() {
 initializeCanvases();
 setupInputHandlers(state);
 
-// Spawn enemies periodically
+// Spawn enemies periodically in center
 setInterval(() => {
     if (!state.enemies || !Array.isArray(state.enemies) || state.enemies.length < 5) {
-        spawnEnemy(state, player.x, player.y);
+        spawnEnemy(state);
     }
 }, 5000);
 
