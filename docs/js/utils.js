@@ -16,9 +16,9 @@ export const GAME_CONFIG = {
     },
     SPRITES: {
         COLLECTIBLES: {
-            CHEESE_1: { src: 'resources/sprites/ships_packed.png', x: 256, y: 0, width: 32, height: 32 },
-            CHEESE_2: { src: 'resources/sprites/ships_packed.png', x: 288, y: 0, width: 32, height: 32 },
-            CHEESE_3: { src: 'resources/sprites/ships_packed.png', x: 320, y: 0, width: 32, height: 32 }
+            CHEESE_1: { src: 'resources/sprites/cheese.png', x: 0, y: 0, width: 32, height: 32 },
+            CHEESE_2: { src: 'resources/sprites/cheese.png', x: 0, y: 0, width: 32, height: 32 },
+            CHEESE_3: { src: 'resources/sprites/cheese.png', x: 0, y: 0, width: 32, height: 32 }
         },
         ENEMIES: {
             ENEMY_1: { src: 'resources/sprites/anime_girls.png', x: 0, y: 0, width: 32, height: 32 },
