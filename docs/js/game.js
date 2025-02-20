@@ -34,7 +34,7 @@ function initializeCanvases() {
 }
 
 // Add FPS limiting constants
-const TARGET_FPS = 30;
+const TARGET_FPS = 60;  // Doubled for smoother gameplay
 const FRAME_TIME = 1000 / TARGET_FPS;
 let lastFrameTime = 0;
 
