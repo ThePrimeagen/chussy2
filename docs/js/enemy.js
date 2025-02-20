@@ -116,21 +116,23 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     
     const { screenX, screenY, size, distance } = worldToScreen(enemy.x, enemy.y, player.x, player.y, player.angle, canvas);
     
-    // Improved occlusion check with multiple rays
-    const angleToEnemy = Math.atan2(enemy.y - player.y, enemy.x - player.x);
-    const angleDiff = 0.1; // Check multiple points on enemy
-    
-    // Check corners and center of enemy
-    const angles = [
-        angleToEnemy - angleDiff,
-        angleToEnemy,
-        angleToEnemy + angleDiff
+    // Improved occlusion check with more precise ray casting
+    const checkPoints = [
+        { dx: -0.2, dy: -0.2 },
+        { dx: 0.2, dy: -0.2 },
+        { dx: -0.2, dy: 0.2 },
+        { dx: 0.2, dy: 0.2 },
+        { dx: 0, dy: 0 }
     ];
-    
+
     let visible = false;
-    for (const angle of angles) {
-        const rayDistance = castRay(player.angle + angle, player.x, player.y);
-        if (Math.abs(rayDistance - distance) < 0.5) {
+    for (const point of checkPoints) {
+        const rayX = enemy.x + point.dx;
+        const rayY = enemy.y + point.dy;
+        const rayDist = Math.sqrt(Math.pow(rayX - player.x, 2) + Math.pow(rayY - player.y, 2));
+        const rayAngle = Math.atan2(rayY - player.y, rayX - player.x);
+        const wallDist = castRay(rayAngle, player.x, player.y);
+        if (Math.abs(rayDist - wallDist) < 0.3) {
             visible = true;
             break;
         }
