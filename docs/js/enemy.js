@@ -69,28 +69,35 @@ export function spawnEnemy(state, playerX, playerY) {
         attempts++;
         
         if (attempts >= maxAttempts) {
-            // If we can't find a valid spawn point, try further out
-            const safeAngle = Math.random() * Math.PI * 2;
-            x = playerX + Math.cos(safeAngle) * 10;
-            y = playerY + Math.sin(safeAngle) * 10;
-            if (!isValidSpawnPoint(x, y)) {
-                // If still invalid, use last valid position or default
-                x = playerX + 8;
-                y = playerY + 8;
+            // If initial attempts fail, try spawning in a valid location within map bounds
+            for (let distance = 4; distance <= 7; distance++) {
+                for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
+                    x = playerX + Math.cos(angle) * distance;
+                    y = playerY + Math.sin(angle) * distance;
+                    if (isValidSpawnPoint(x, y)) {
+                        return; // Valid spawn point found
+                    }
+                }
             }
+            // If no valid point found, don't spawn enemy
+            x = -1;
+            y = -1;
             break;
         }
     } while (!isValidSpawnPoint(x, y));
     
-    state.enemies.push({
-        x: x,
-        y: y,
-        health: 100,
-        type: `ANIME_GIRL_${Math.floor(Math.random() * 10) + 1}`,
-        lastMove: Date.now(),
-        frame: 0,
-        animationSpeed: 0.1
-    });
+    // Only add enemy if valid position found *BEEP BOOP*
+    if (x >= 0 && y >= 0) {
+        state.enemies.push({
+            x: x,
+            y: y,
+            health: 100,
+            type: `ANIME_GIRL_${Math.floor(Math.random() * 10) + 1}`,
+            lastMove: Date.now(),
+            frame: 0,
+            animationSpeed: 0.1
+        });
+    }
 }
 
 export function updateEnemies(state, player) {
