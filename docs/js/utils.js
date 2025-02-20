@@ -39,9 +39,10 @@ export function calculateDistance(x1, y1, x2, y2) {
 export function worldToScreen(x, y, playerX, playerY, playerAngle, canvas) {
     const dx = x - playerX;
     const dy = y - playerY;
-    const angle = Math.atan2(dy, dx) - playerAngle;
+    const angle = Math.atan2(dy, dx);
+    const relativeAngle = ((angle - playerAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    const screenX = (Math.tan(angle) + 1) * canvas.width / 2;
+    const screenX = (Math.tan(relativeAngle) + 1) * canvas.width / 2;
     const screenY = canvas.height / 2;
     const size = canvas.height / distance;
     return { screenX, screenY, size, distance };
