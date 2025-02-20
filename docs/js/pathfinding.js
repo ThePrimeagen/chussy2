@@ -66,6 +66,11 @@ export function findPath(startX, startY, endX, endY) {
                     newY < 0 || newY >= MAP.length || 
                     MAP[newY][newX] === 1) continue;
                 
+                // Prevent diagonal movement through walls
+                if (dx !== 0 && dy !== 0) {
+                    if (MAP[current.y][newX] === 1 || MAP[newY][current.x] === 1) continue;
+                }
+                
                 const neighbor = new Node(newX, newY);
                 if (closedSet.has(`${neighbor.x},${neighbor.y}`)) continue;
                 
