@@ -9,8 +9,8 @@ export const player = {
     speed: GAME_CONFIG.PLAYER_SPEED * 0.3, // Reduced movement speed
     turnSpeed: 0.075,  // Increased by 1.5x
     rotationVelocity: 0,
-    rotationAcceleration: 0.008, // Increased for snappier rotation
-    rotationFriction: 0.7,
+    rotationAcceleration: 0.016, // Doubled for faster response
+    rotationFriction: 0.85,     // Increased for smoother turning
     velocity: { x: 0, y: 0 },
     acceleration: 0.005, // Reduced for slower movement
     friction: 0.92, // Increased friction to slow movement
