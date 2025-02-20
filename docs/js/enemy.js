@@ -47,6 +47,14 @@ export function spawnEnemy(state) {
 
 export function updateEnemies(state, player) {
     if (!state.gameOver && state.enemies && Array.isArray(state.enemies)) {
+        // Sort enemies by distance for proper z-indexing
+        state.enemies.sort((a, b) => {
+            if (!a || !b) return 0;
+            const distA = Math.sqrt(Math.pow(a.x - player.x, 2) + Math.pow(a.y - player.y, 2));
+            const distB = Math.sqrt(Math.pow(b.x - player.x, 2) + Math.pow(b.y - player.y, 2));
+            return distB - distA; // Sort furthest to closest
+        });
+        
         for (let i = state.enemies.length - 1; i >= 0; i--) {
             const enemy = state.enemies[i];
             if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') continue;
@@ -61,14 +69,31 @@ export function updateEnemies(state, player) {
                 continue;
             }
             
-            // Update movement (10x slower)
-            if (dist > 0.1) {
-                const newX = enemy.x + (dx / dist) * 0.003;
-                const newY = enemy.y + (dy / dist) * 0.003;
+            // Update pathfinding every 500ms
+            const now = Date.now();
+            if (now - enemy.lastPathUpdate > 500) {
+                enemy.path = findPath(enemy.x, enemy.y, player.x, player.y);
+                enemy.lastPathUpdate = now;
+                enemy.pathIndex = 0;
+            }
+            
+            // Follow path if available
+            if (enemy.path && enemy.path.length > 0 && enemy.pathIndex < enemy.path.length) {
+                const target = enemy.path[enemy.pathIndex];
+                const tdx = target.x - enemy.x;
+                const tdy = target.y - enemy.y;
+                const tdist = Math.sqrt(tdx * tdx + tdy * tdy);
                 
-                if (!checkWallCollision(newX, newY)) {
-                    enemy.x = newX;
-                    enemy.y = newY;
+                if (tdist < 0.1) {
+                    enemy.pathIndex++;
+                } else {
+                    const newX = enemy.x + (tdx / tdist) * 0.003;
+                    const newY = enemy.y + (tdy / tdist) * 0.003;
+                    
+                    if (!checkWallCollision(newX, newY)) {
+                        enemy.x = newX;
+                        enemy.y = newY;
+                    }
                 }
             }
         }
@@ -81,17 +106,34 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     
     const { screenX, screenY, size, distance } = worldToScreen(enemy.x, enemy.y, player.x, player.y, player.angle, canvas);
     
-    // Skip if behind wall
-    const rayDistance = castRay(player.angle + Math.atan2(enemy.y - player.y, enemy.x - player.x), player.x, player.y);
-    if (rayDistance < distance) return;
+    // Improved occlusion check with multiple rays
+    const angleToEnemy = Math.atan2(enemy.y - player.y, enemy.x - player.x);
+    const angleDiff = 0.1; // Check multiple points on enemy
     
-    // Skip if outside view
-    if (screenX < -size || screenX > canvas.width + size) return;
+    // Check corners and center of enemy
+    const angles = [
+        angleToEnemy - angleDiff,
+        angleToEnemy,
+        angleToEnemy + angleDiff
+    ];
     
-    // Draw enemy with depth of field
+    let visible = false;
+    for (const angle of angles) {
+        const rayDistance = castRay(player.angle + angle, player.x, player.y);
+        if (Math.abs(rayDistance - distance) < 0.5) {
+            visible = true;
+            break;
+        }
+    }
+    
+    if (!visible) return;
+    
+    // Skip if outside view with margin
+    const margin = size * 0.5;
+    if (screenX < -margin || screenX > canvas.width + margin) return;
+    
+    // Draw enemy with proper z-indexing and health bar
     ctx.save();
-    const blurAmount = Math.min(5, Math.max(0, distance - 2) / 2);
-    ctx.filter = `blur(${blurAmount}px)`;
     ctx.fillStyle = '#ff0000';
     ctx.beginPath();
     ctx.arc(screenX, screenY, size/4, 0, Math.PI * 2);
@@ -106,6 +148,6 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     ctx.fillRect(screenX - healthBarWidth/2, screenY - size/3, healthBarWidth, healthBarHeight);
     ctx.fillStyle = '#00ff00';
     ctx.fillRect(screenX - healthBarWidth/2, screenY - size/3, healthBarWidth * healthPercent, healthBarHeight);
-    ctx.filter = 'none';
+    
     ctx.restore();
 }
