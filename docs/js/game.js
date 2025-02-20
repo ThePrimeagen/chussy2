@@ -136,6 +136,7 @@ export function gameLoop(timestamp) {
     }
     updateCollectibles(state, player);
     updateDucks(state, player);
+    if (!state.horror) initHorrorState(state);
     updateHorror(state, player);
     updateAutoplay(state, player);
     
