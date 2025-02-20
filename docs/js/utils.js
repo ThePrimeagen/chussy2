@@ -62,6 +62,41 @@ export function worldToScreen(x, y, playerX, playerY, playerAngle, canvas) {
 
 export const spriteCache = {};
 
+function generateAnimeSprite(index) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 32;
+    canvas.height = 32;
+    const ctx = canvas.getContext('2d');
+    
+    // Base colors for variety
+    const colors = ['#FFB6C1', '#FFD700', '#87CEEB', '#98FB98', '#DDA0DD'];
+    const hairColor = colors[index % colors.length];
+    
+    // Draw face
+    ctx.fillStyle = '#FFE4E1';
+    ctx.beginPath();
+    ctx.arc(16, 16, 12, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw hair
+    ctx.fillStyle = hairColor;
+    ctx.beginPath();
+    ctx.moveTo(4, 16);
+    ctx.quadraticCurveTo(16, 0, 28, 16);
+    ctx.lineTo(28, 24);
+    ctx.lineTo(4, 24);
+    ctx.fill();
+    
+    // Draw eyes
+    ctx.fillStyle = '#000000';
+    ctx.beginPath();
+    ctx.ellipse(12, 14, 2, 3, 0, 0, Math.PI * 2);
+    ctx.ellipse(20, 14, 2, 3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    return canvas;
+}
+
 export async function loadSprite(spriteName) {
     if (spriteCache[spriteName]) return spriteCache[spriteName];
     
