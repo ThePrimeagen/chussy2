@@ -8,11 +8,21 @@ export function spawnEnemy(state, playerX, playerY) {
     }
     
     let x, y;
+    let attempts = 0;
+    const maxAttempts = 10;
     do {
         const angle = Math.random() * Math.PI * 2;
-        const distance = 5;
+        const distance = Math.random() * 3 + 3; // Random distance between 3-6 units
         x = playerX + Math.cos(angle) * distance;
         y = playerY + Math.sin(angle) * distance;
+        attempts++;
+        if (attempts >= maxAttempts) {
+            // If we can't find a valid spawn point, spawn further away
+            const safeAngle = Math.random() * Math.PI * 2;
+            x = playerX + Math.cos(safeAngle) * 8;
+            y = playerY + Math.sin(safeAngle) * 8;
+            break;
+        }
     } while (checkWallCollision(x, y));
     
     state.enemies.push({
