@@ -6,6 +6,7 @@ import { drawWalls, drawHUD, drawArms, drawMinimap } from './render.js';
 import { setupInputHandlers, keys, updateAutoplay } from './input.js';
 import { spawnDuck, updateDucks, renderDuck, duckTypes } from './ducks.js';
 import { renderStore, handleStoreClick } from './store.js';
+import { updateHorror } from './horror.js';
 
 // Canvas contexts
 let canvas = null;
@@ -135,6 +136,7 @@ export function gameLoop(timestamp) {
     }
     updateCollectibles(state, player);
     updateDucks(state, player);
+    updateHorror(state, player);
     updateAutoplay(state, player);
     
     drawMinimap(minimapCtx, state, player);
