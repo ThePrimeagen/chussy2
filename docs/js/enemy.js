@@ -8,23 +8,57 @@ export function spawnEnemy(state, playerX, playerY) {
     }
     
     let x, y;
-    const MIN_WALL_DISTANCE = 1.5;
+    const MIN_WALL_DISTANCE = 2.0;  // Increased minimum wall distance
+    const MIN_PLAYER_DISTANCE = 4.0; // Minimum distance from player
+    const MAX_PLAYER_DISTANCE = 8.0; // Maximum distance from player
     let attempts = 0;
-    const maxAttempts = 15;
+    const maxAttempts = 20;  // Increased max attempts
     
     function isValidSpawnPoint(x, y) {
+        // Check map boundaries
+        if (x < 1 || x >= MAP[0].length - 1 || y < 1 || y >= MAP.length - 1) return false;
+        
+        // Check distance from player
+        const playerDist = Math.sqrt((x - playerX) * (x - playerX) + (y - playerY) * (y - playerY));
+        if (playerDist < MIN_PLAYER_DISTANCE || playerDist > MAX_PLAYER_DISTANCE) return false;
+        
         // Check immediate position
         if (checkWallCollision(x, y)) return false;
         
-        // Check surrounding area
+        // Check surrounding area more thoroughly
         for (let dx = -MIN_WALL_DISTANCE; dx <= MIN_WALL_DISTANCE; dx += 0.5) {
             for (let dy = -MIN_WALL_DISTANCE; dy <= MIN_WALL_DISTANCE; dy += 0.5) {
-                if (checkWallCollision(x + dx, y + dy)) {
-                    return false;
-                }
+                const checkX = x + dx;
+                const checkY = y + dy;
+                if (checkX < 1 || checkX >= MAP[0].length - 1 || checkY < 1 || checkY >= MAP.length - 1) return false;
+                if (checkWallCollision(checkX, checkY)) return false;
             }
         }
-        return true;
+        
+        // Validate path to player exists
+        let pathX = x;
+        let pathY = y;
+        let steps = 0;
+        const maxSteps = 50;
+        
+        while (steps < maxSteps) {
+            const dx = playerX - pathX;
+            const dy = playerY - pathY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < 0.5) return true;  // Path found
+            
+            const stepX = pathX + (dx / dist) * 0.5;
+            const stepY = pathY + (dy / dist) * 0.5;
+            
+            if (checkWallCollision(stepX, stepY)) return false;
+            
+            pathX = stepX;
+            pathY = stepY;
+            steps++;
+        }
+        
+        return false;  // No valid path found
     }
     
     do {
