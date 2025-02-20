@@ -91,6 +91,14 @@
             player: {
                 health: 100,
                 maxHealth: 100
+            },
+            autoplay: {
+                enabled: false,
+                lastActivity: Date.now(),
+                inactivityThreshold: 5000, // 5 seconds
+                targetEnemy: null,
+                nextMoveTime: 0,
+                moveInterval: 1000 // Change direction every second
             }
         };
 
@@ -172,7 +180,54 @@
         }
 
         // Update projectiles and enemies
+        // Autoplay AI logic
+        function updateAutoplay() {
+            const now = Date.now();
+            
+            // Check for inactivity
+            if (!state.autoplay.enabled && now - state.autoplay.lastActivity > state.autoplay.inactivityThreshold) {
+                state.autoplay.enabled = true;
+                console.log('Autoplay activated');
+            }
+
+            if (state.autoplay.enabled) {
+                // Find nearest enemy
+                let nearestEnemy = null;
+                let minDist = Infinity;
+                state.enemies.forEach(enemy => {
+                    const dx = enemy.x - player.x;
+                    const dy = enemy.y - player.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearestEnemy = enemy;
+                    }
+                });
+                state.autoplay.targetEnemy = nearestEnemy;
+
+                // Change movement direction periodically
+                if (now > state.autoplay.nextMoveTime) {
+                    state.autoplay.nextMoveTime = now + state.autoplay.moveInterval;
+                    // Random movement pattern
+                    keys.w = Math.random() > 0.5;
+                    keys.s = !keys.w;
+                    keys.a = Math.random() > 0.5;
+                    keys.d = !keys.a;
+                }
+
+                // Aim and shoot at nearest enemy
+                if (nearestEnemy) {
+                    const targetAngle = Math.atan2(nearestEnemy.y - player.y, nearestEnemy.x - player.x);
+                    player.angle = targetAngle;
+                    keys[' '] = true; // Always shoot when enemy in sight
+                }
+            }
+        }
+
         function updateEntities() {
+            // Update autoplay
+            updateAutoplay();
+
             // Handle continuous movement
             if (keys.w) {
                 const newX = player.x + Math.cos(player.angle) * player.speed;
@@ -304,12 +359,16 @@
         document.addEventListener('keydown', (e) => {
             if (e.key in keys) {
                 keys[e.key] = true;
+                // Disable autoplay on any key press
+                state.autoplay.enabled = false;
+                state.autoplay.lastActivity = Date.now();
             }
         });
 
         document.addEventListener('keyup', (e) => {
             if (e.key in keys) {
                 keys[e.key] = false;
+                state.autoplay.lastActivity = Date.now();
             }
         });
 
