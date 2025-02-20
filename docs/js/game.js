@@ -11,9 +11,19 @@ let ctx = null;
 let minimapCanvas = null;
 let minimapCtx = null;
 
-// Initialize canvases and contexts
+// Initialize canvases, contexts, and webcam
 function initializeCanvases() {
     try {
+        // Initialize webcam
+        const video = document.getElementById('webcamVideo');
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(err => console.error('Webcam error:', err));
+        }
+        
         canvas = document.getElementById('gameCanvas');
         if (!canvas) throw new Error('Canvas initialization failed');
         ctx = canvas.getContext('2d');
