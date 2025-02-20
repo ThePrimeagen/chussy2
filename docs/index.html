@@ -8,10 +8,67 @@
             margin: 0; 
             background: #000;
             overflow: hidden;
+            touch-action: none;
         }
         canvas { 
             width: 100vw;
             height: 100vh;
+        }
+        .game-title {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: #ff4400;
+            font-size: 48px;
+            font-family: 'Comic Sans MS', cursive;
+            text-shadow: 0 0 10px #ff0000;
+            z-index: 2;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+        }
+        .flame-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .flame {
+            position: absolute;
+            font-size: 24px;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            from { transform: translateY(-20px); }
+            to { transform: translateY(100vh); }
+        }
+        .mobile-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .mobile-controls button {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,68,0,0.5);
+            border: 2px solid #ff4400;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            touch-action: none;
+        }
+        @media (max-width: 768px) {
+            .mobile-controls {
+                display: flex;
+            }
         }
         .ceo-approval {
             position: fixed;
@@ -44,9 +101,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
+    <h1 class="game-title">🔥 SUSSY INFERNO 3D 🔥</h1>
+    <div class="flame-container" id="flameContainer"></div>
     <canvas id="gameCanvas"></canvas>
+    <div class="mobile-controls">
+        <button id="leftBtn">←</button>
+        <button id="upBtn">↑</button>
+        <button id="downBtn">↓</button>
+        <button id="rightBtn">→</button>
+        <button id="shootBtn">🧀</button>
+    </div>
     <div class="ceo-approval">
-        <p>I approve of this webpage</p>
+        <p>ThePrimeagen Approves of this webpage</p>
         <img src="https://avatars.githubusercontent.com/u/4442245" alt="ThePrimeagen CEO">
     </div>
     <a href="termsofservice.html" class="tos-link">Sussy Terms of Service</a>
@@ -66,23 +132,77 @@
         }
     </script>
     <script>
+        // Auto-refresh
+        let lastActivity = Date.now();
+        document.addEventListener('mousemove', () => lastActivity = Date.now());
+        document.addEventListener('keydown', () => lastActivity = Date.now());
+        document.addEventListener('click', () => lastActivity = Date.now());
+        setInterval(() => {
+            if (Date.now() - lastActivity > 60000) {
+                window.location.reload();
+            }
+        }, 10000);
+
+        // Flame emojis
+        function createFlame() {
+            const flame = document.createElement('div');
+            flame.className = 'flame';
+            flame.textContent = '🔥';
+            flame.style.left = Math.random() * 100 + 'vw';
+            flame.style.animationDuration = Math.random() * 3 + 2 + 's';
+            document.getElementById('flameContainer').appendChild(flame);
+            flame.addEventListener('animationend', () => flame.remove());
+        }
+        setInterval(createFlame, 500);
+
         // Game state
         const state = {
             projectiles: [],
             enemies: [],
             autoplay: false,
-            lastInputTime: Date.now()
+            lastInputTime: Date.now(),
+            keys: {
+                w: false,
+                s: false,
+                a: false,
+                d: false,
+                space: false
+            }
         };
 
-        // Map data
+        // Map data and textures
+        const WALL_TEXTURES = [
+            'https://placekitten.com/64/64',
+            'https://placekitten.com/65/65',
+            'https://placekitten.com/66/66'
+        ];
+        const ENEMY_SPRITES = [
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKUSURBVFiF7ZdNaBNBFMd/s9mkTWqSJk1JW7QqVkWkKB5E/LiIBz0IHhQP4smDFBE96NGDiCBeRPCgICIePCh4EDyJKCLiQaqCn1Vr1TaxX2natGmbNLvjYZNQapKNwYvgf9h9M/P+v5n3ZnYXYmJiYmJi/jFCVJGxgQutLqt1QEF0KKDVg9MBhgaGBgt+0F0Q8MHrg4U5WJiHOQ/4QqJnGXwB8C/7cblcRQKaptWsr6tpQwfg9kDfEehsg+5OaG8Fu6263vRnmPLAu0/w8j28eAsTn8DnD4VFUcxqmhbUdd0kSZJRIVAUBYfDEVHsdMDxI3DyGBzYA4oSWby1GY7sgxMDkJmHp6/h0XOYmQNVVc2qqpbVxWAwGNzc3KxrmsZGxe6dMD4Kj27A+cHw4rXY2QaXhmFqAq4OQ0dbKLZly5b1/0QgEMDpdEYU7+2Gx7fg7jXY01V//M52uH8dHt6E/T3rx202W1ldVVUxm81/JGDRYP8eePcE7l2HzraNz7OrA+5ehwf5cPZQyJvNZkRRLBNQFAWLxVJ3YLMZTh+HyXG4NQItTRvPvxaXE26PwtvHcG4QrFYriqKU1SVJQpblugI2K1wcgk9P4MoFaLJvbvHvabLDtQswPQ6XhsFmtSLLMoqilAkEg0Hs9sgXpd0Gly/A7DhcPgeODSxc9/PrAq4Mw+cJuDgEDrsNWZYJBoNldUmSEASh7gQAkoNw/Qh8fR7e5/U2YiP6jXDqIPyYhLPHQRAEJEkqq5tMJrxeL4ZhRJ6gqRFujMBMBvp6N79wbxdkH8KFDDA0UPf5EEURn8+HYRhlAoqiYLVasVgsUcVNDZAIL7jxb0IQBERRxOfzoes6APJvjT9e8/8RQRBQVZVAIABALBATExMT8z/zC1vqIVMI2EIJAAAAAElFTkSuQmCC',
+            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAKUSURBVFiF7ZdNaBNBFMd/s9mkTWqSJk1JW7QqVkWkKB5E/LiIBz0IHhQP4smDFBE96NGDiCBeRPCgICIePCh4EDyJKCLiQaqCn1Vr1TaxX2natGmbNLvjYZNQapKNwYvgf9h9M/P+v5n3ZnYXYmJiYmJi/jFCVJGxgQutLqt1QEF0KKDVg9MBhgaGBgt+0F0Q8MHrg4U5WJiHOQ/4QqJnGXwB8C/7cblcRQKaptWsr6tpQwfg9kDfEehsg+5OaG8Fu6263vRnmPLAu0/w8j28eAsTn8DnD4VFUcxqmhbUdd0kSZJRIVAUBYfDEVHsdMDxI3DyGBzYA4oSWby1GY7sgxMDkJmHp6/h0XOYmQNVVc2qqpbVxWAwGNzc3KxrmsZGxe6dMD4Kj27A+cHw4rXY2QaXhmFqAq4OQ0dbKLZly5b1/0QgEMDpdEYU7+2Gx7fg7jXY01V//M52uH8dHt6E/T3rx202W1ldVVUxm81/JGDRYP8eePcE7l2HzraNz7OrA+5ehwf5cPZQyJvNZkRRLBNQFAWLxVJ3YLMZTh+HyXG4NQItTRvPvxaXE26PwtvHcG4QrFYriqKU1SVJQpblugI2K1wcgk9P4MoFaLJvbvHvabLDtQswPQ6XhsFmtSLLMoqilAkEg0Hs9sgXpd0Gly/A7DhcPgeODSxc9/PrAq4Mw+cJuDgEDrsNWZYJBoNldUmSEASh7gQAkoNw/Qh8fR7e5/U2YiP6jXDqIPyYhLPHQRAEJEkqq5tMJrxeL4ZhRJ6gqRFujMBMBvp6N79wbxdkH8KFDDA0UPf5EEURn8+HYRhlAoqiYLVasVgsUcVNDZAIL7jxb0IQBERRxOfzoes6APJvjT9e8/8RQRBQVZVAIABALBATExMT8z/zC1vqIVMI2EIJAAAAAElFTkSuQmCC'
+        ];
+        const CHEESE_SPRITE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGUlEQVQYV2P8z8Dwn4EAYBxVQEgBNs0gDQBn4gQJE+ZTogAAAABJRU5ErkJggg==';
+
+        const textureImages = WALL_TEXTURES.map(url => {
+            const img = new Image();
+            img.src = url;
+            return img;
+        });
+
+        const enemyImages = ENEMY_SPRITES.map(url => {
+            const img = new Image();
+            img.src = url;
+            return img;
+        });
+
+        // Map data with different wall types
         const MAP = [
             [1,1,1,1,1,1,1,1],
             [1,0,0,0,0,0,0,1],
-            [1,0,1,0,0,1,0,1],
+            [1,0,2,0,0,3,0,1],
             [1,0,0,0,0,0,0,1],
-            [1,0,1,0,0,1,0,1],
+            [1,0,3,0,0,2,0,1],
             [1,0,0,0,0,0,0,1],
-            [1,0,1,0,0,1,0,1],
+            [1,0,2,0,0,3,0,1],
             [1,1,1,1,1,1,1,1]
         ];
 
@@ -119,14 +239,52 @@
                 let mapX = Math.floor(rayX);
                 let mapY = Math.floor(rayY);
                 
-                if (MAP[mapY] && MAP[mapY][mapX] === 1) {
-                    return distance;
+                if (MAP[mapY] && MAP[mapY][mapX] > 0) {
+                    const wallType = MAP[mapY][mapX];
+                    const textureX = Math.floor((rayX % 1) * textureImages[wallType-1].width);
+                    return { distance, wallType, textureX };
                 }
             }
-            return distance;
+            return { distance: 20, wallType: 0, textureX: 0 };
+        }
+
+        function updatePlayerMovement() {
+            let dx = 0;
+            let dy = 0;
+            
+            if (state.keys.w) {
+                dx += Math.cos(player.angle) * player.speed;
+                dy += Math.sin(player.angle) * player.speed;
+            }
+            if (state.keys.s) {
+                dx -= Math.cos(player.angle) * player.speed;
+                dy -= Math.sin(player.angle) * player.speed;
+            }
+            if (state.keys.a) {
+                player.angle -= player.turnSpeed;
+            }
+            if (state.keys.d) {
+                player.angle += player.turnSpeed;
+            }
+            
+            // Normalize diagonal movement
+            if (dx !== 0 && dy !== 0) {
+                const length = Math.sqrt(dx * dx + dy * dy);
+                dx = (dx / length) * player.speed;
+                dy = (dy / length) * player.speed;
+            }
+            
+            const newX = player.x + dx;
+            const newY = player.y + dy;
+            
+            if (!checkCollision(newX, newY)) {
+                player.x = newX;
+                player.y = newY;
+            }
         }
 
         function drawFrame() {
+            updatePlayerMovement();
             // Clear screen with dark gradient for atmosphere
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, '#000');
@@ -151,34 +309,116 @@
         }
 
         // Input handling
+        function checkCollision(x, y) {
+            const mapX = Math.floor(x);
+            const mapY = Math.floor(y);
+            const buffer = 0.2; // Collision buffer
+            
+            if (MAP[mapY] && MAP[mapY][mapX] > 0) return true;
+            
+            // Check corners for smoother collision
+            const corners = [
+                { x: x + buffer, y: y + buffer },
+                { x: x - buffer, y: y + buffer },
+                { x: x + buffer, y: y - buffer },
+                { x: x - buffer, y: y - buffer }
+            ];
+            
+            return corners.some(corner => {
+                const cornerMapX = Math.floor(corner.x);
+                const cornerMapY = Math.floor(corner.y);
+                return MAP[cornerMapY] && MAP[cornerMapY][cornerMapX] > 0;
+            });
+        }
+
+        function updatePlayerMovement() {
+            let dx = 0;
+            let dy = 0;
+            
+            if (state.keys.w) {
+                dx += Math.cos(player.angle) * player.speed;
+                dy += Math.sin(player.angle) * player.speed;
+            }
+            if (state.keys.s) {
+                dx -= Math.cos(player.angle) * player.speed;
+                dy -= Math.sin(player.angle) * player.speed;
+            }
+            if (state.keys.a) {
+                player.angle -= player.turnSpeed;
+            }
+            if (state.keys.d) {
+                player.angle += player.turnSpeed;
+            }
+            
+            // Normalize diagonal movement
+            if (dx !== 0 && dy !== 0) {
+                const length = Math.sqrt(dx * dx + dy * dy);
+                dx = (dx / length) * player.speed;
+                dy = (dy / length) * player.speed;
+            }
+            
+            const newX = player.x + dx;
+            const newY = player.y + dy;
+            
+            if (!checkCollision(newX, newY)) {
+                player.x = newX;
+                player.y = newY;
+            }
+        }
+
+        function handleInput(e) {
+            if (e.key === ' ') {
+                state.projectiles.push({
+                    x: player.x,
+                    y: player.y,
+                    angle: player.angle,
+                    speed: 0.5,
+                    damage: 50
+                });
+            }
+        }
+
+        // Mobile controls
+        function setupMobileControls() {
+            const buttons = {
+                leftBtn: { key: 'a' },
+                rightBtn: { key: 'd' },
+                upBtn: { key: 'w' },
+                downBtn: { key: 's' },
+                shootBtn: { key: ' ' }
+            };
+
+            Object.entries(buttons).forEach(([id, { key }]) => {
+                const btn = document.getElementById(id);
+                
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    state.keys[key] = true;
+                    state.lastInputTime = Date.now();
+                });
+
+                btn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    state.keys[key] = false;
+                });
+            });
+        }
+
         document.addEventListener('keydown', (e) => {
-            switch(e.key) {
-                case 'w':
-                    player.x += Math.cos(player.angle) * player.speed;
-                    player.y += Math.sin(player.angle) * player.speed;
-                    break;
-                case 's':
-                    player.x -= Math.cos(player.angle) * player.speed;
-                    player.y -= Math.sin(player.angle) * player.speed;
-                    break;
-                case 'a':
-                    player.angle -= player.turnSpeed;
-                    break;
-                case 'd':
-                    player.angle += player.turnSpeed;
-                    break;
-                case ' ':
-                    // Enhanced shooting mechanic
-                    state.projectiles.push({
-                        x: player.x,
-                        y: player.y,
-                        angle: player.angle,
-                        speed: 0.5,
-                        damage: 50
-                    });
-                    break;
+            if (e.key in state.keys) {
+                state.keys[e.key] = true;
+                state.lastInputTime = Date.now();
+            }
+            handleInput(e);
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key in state.keys) {
+                state.keys[e.key] = false;
             }
         });
+
+        setupMobileControls();
 
         // Autoplay feature
         function updateAutoplay() {
@@ -250,6 +490,7 @@
         });
 
         function drawFrame() {
+            updatePlayerMovement();
             updateAutoplay();
             
             // Clear screen with dark gradient for atmosphere
@@ -272,18 +513,19 @@
             
             for (let i = 0; i < numRays; i++) {
                 const rayAngle = player.angle - player.fov/2 + rayStep * i;
-                const distance = castRay(rayAngle);
+                const { distance, wallType, textureX } = castRay(rayAngle);
                 const wallHeight = canvas.height / distance;
                 
-                // Add depth and texture effect
-                const brightness = Math.min(255, Math.floor(255 / (distance * 0.5)));
-                const wallGradient = ctx.createLinearGradient(i*2, (canvas.height-wallHeight)/2, i*2, (canvas.height+wallHeight)/2);
-                wallGradient.addColorStop(0, `rgb(${brightness},${brightness/2},0)`);
-                wallGradient.addColorStop(0.5, `rgb(${brightness},${brightness/3},0)`);
-                wallGradient.addColorStop(1, `rgb(${brightness/2},${brightness/4},0)`);
-                
-                ctx.fillStyle = wallGradient;
-                ctx.fillRect(i*2, (canvas.height-wallHeight)/2, 2, wallHeight);
+                if (wallType > 0) {
+                    const texture = textureImages[wallType-1];
+                    if (texture.complete) {
+                        ctx.drawImage(
+                            texture,
+                            textureX, 0, 1, texture.height,
+                            i*2, (canvas.height-wallHeight)/2, 2, wallHeight
+                        );
+                    }
+                }
             }
             
             // Draw projectiles
