@@ -92,41 +92,32 @@ export function setupInputHandlers(state) {
         }
     });
     
-    // Add mouse click shooting and enemy damage *BEEP BOOP*
-    document.addEventListener('click', (e) => {
+    // Handle mouse camera control and pointer lock
+    document.addEventListener('mousedown', () => {
         const canvas = document.getElementById('gameCanvas');
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        // Check if clicked on enemy
-        state.enemies.forEach(enemy => {
-            const { screenX, screenY, size } = worldToScreen(enemy.x, enemy.y, state.player.x, state.player.y, state.player.angle, canvas);
-            const clickDist = Math.sqrt(Math.pow(x - screenX, 2) + Math.pow(y - screenY, 2));
-            if (clickDist < size/4) {
-                enemy.health -= 20;  // Reduce enemy health by 20
-                if (enemy.health <= 0) {
-                    state.enemies = state.enemies.filter(e => e !== enemy);
-                }
-            }
-        });
+        canvas.requestPointerLock();
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (document.pointerLockElement === document.getElementById('gameCanvas')) {
+            const sensitivity = 0.003;  // Adjust for smooth control
+            player.angle += e.movementX * sensitivity;
+            
+            // Keep angle normalized
+            player.angle = ((player.angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+            
+            state.autoplay.enabled = false;
+            state.autoplay.lastActivity = Date.now();
+        }
+    });
+    
+    // Handle left mouse button shooting
+    document.addEventListener('click', (e) => {
+        if (e.button !== 0) return;  // Only left click
         
         shoot(state);
         state.autoplay.enabled = false;
         state.autoplay.lastActivity = Date.now();
-        
-        // Add yellow star flash *WHIRR*
-        const flash = document.createElement('div');
-        flash.innerHTML = '⭐';
-        flash.style.position = 'absolute';
-        flash.style.left = e.clientX + 'px';
-        flash.style.top = e.clientY + 'px';
-        flash.style.color = '#ffff00';
-        flash.style.animation = 'flash 0.2s forwards';
-        flash.style.pointerEvents = 'none';
-        flash.style.zIndex = '9999';
-        document.body.appendChild(flash);
-        setTimeout(() => flash.remove(), 200);
     });
 
     setInterval(createFlame, 500);

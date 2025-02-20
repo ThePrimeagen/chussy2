@@ -47,10 +47,13 @@ export function castRay(rayAngle, playerX, playerY) {
         
         // Fast bounds check before array access
         if (mapY >= 0 && mapY < mapHeight && mapX >= 0 && mapX < mapWidth && MAP[mapY][mapX] === 1) {
-            return distance;
+            // Fix fisheye by using perpendicular distance
+            const perpDistance = distance * Math.cos(rayAngle - player.angle);
+            return perpDistance;
         }
     }
-    return distance;
+    // Fix fisheye for max distance case
+    return distance * Math.cos(rayAngle - player.angle);
 }
 
 // Cache map dimensions for faster collision checks
