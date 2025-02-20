@@ -2,6 +2,7 @@ import { GAME_CONFIG } from './utils.js';
 import { player } from './player.js';
 import { MAP, checkWallCollision, castRay } from './map.js';
 import { calculateDistance, spriteCache } from './utils.js';
+import { findPath } from './pathfinding.js';
 
 // *BEEP BOOP* Breaking circular dependency because SOMEONE didn't think about architecture... *MECHANICAL GROAN*
 function worldToScreen(x, y, playerX, playerY, playerAngle, canvas) {
@@ -35,8 +36,11 @@ export function spawnEnemy(state) {
             x: x,
             y: y,
             health: 100,
-            type: 'ENEMY_1',  // Simplified to single enemy type
-            lastMove: Date.now()
+            type: 'ENEMY_1',
+            lastMove: Date.now(),
+            lastPathUpdate: 0,
+            pathIndex: 0,
+            path: null
         });
     }
 }
@@ -50,14 +54,22 @@ export function updateEnemies(state, player) {
             const dy = player.y - enemy.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             
+            // Remove enemy on collision
+            if (dist < 0.5) {
+                state.enemies.splice(index, 1);
+                return;
+            }
+            
+            // Update movement (10x slower)
             if (dist > 0.1) {
-                const newX = enemy.x + (dx / dist) * 0.03;
-                const newY = enemy.y + (dy / dist) * 0.03;
+                const newX = enemy.x + (dx / dist) * 0.003;
+                const newY = enemy.y + (dy / dist) * 0.003;
                 
                 if (!checkWallCollision(newX, newY)) {
                     enemy.x = newX;
                     enemy.y = newY;
                 }
+            }
             }
 
             // Damage player if too close
@@ -87,7 +99,10 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     
     const screenX = (Math.tan(relativeAngle) + 1) * canvas.width / 2;
     const screenY = canvas.height / 2;
-    const size = canvas.height / distance;
+    
+    // Calculate size with max constraint
+    const maxSize = canvas.height / 4;
+    const size = Math.min(maxSize, canvas.height / distance);
     
     // Skip if outside view
     if (screenX < -size || screenX > canvas.width + size) return;

@@ -6,14 +6,14 @@ export const player = {
     y: 1.5,
     angle: 0,
     fov: GAME_CONFIG.FOV,
-    speed: GAME_CONFIG.PLAYER_SPEED * 0.6,
-    turnSpeed: 0.05,  // *BEEP BOOP* ZOOM ZOOM! 🤖
+    speed: GAME_CONFIG.PLAYER_SPEED * 0.3, // Reduced movement speed
+    turnSpeed: 0.075,  // Increased by 1.5x
     rotationVelocity: 0,
-    rotationAcceleration: 0.005,
+    rotationAcceleration: 0.008, // Increased for snappier rotation
     rotationFriction: 0.7,
     velocity: { x: 0, y: 0 },
-    acceleration: 0.01,
-    friction: 0.9,
+    acceleration: 0.005, // Reduced for slower movement
+    friction: 0.92, // Increased friction to slow movement
     health: 100,
     maxHealth: 100,
     arms: {

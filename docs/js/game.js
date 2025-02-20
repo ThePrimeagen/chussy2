@@ -46,6 +46,8 @@ function initializeCanvases() {
 export const state = {
     projectiles: [],
     enemies: [],
+    collectibles: [],
+    score: 0,
     gameOver: false,
     lastShot: 0,
     shootCooldown: 250,
@@ -125,6 +127,7 @@ export function gameLoop() {
     // Update game state
     updatePlayerMovement(keys);
     updateEnemies(state, player);
+    updateCollectibles(state, player);
     updateAutoplay(state, player);
     
     // Draw minimap
@@ -136,6 +139,9 @@ export function gameLoop() {
 // Initialize game
 initializeCanvases();
 setupInputHandlers(state);
+
+// Spawn initial cheese
+spawnCheese(state);
 
 // Spawn enemies periodically in center
 setInterval(() => {
