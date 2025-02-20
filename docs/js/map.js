@@ -15,30 +15,52 @@ export const MAP = [
     [1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
+// Pre-calculate step size for better performance
+const RAY_STEP = 0.1;
+const MAX_DISTANCE = 20;
+
 export function castRay(rayAngle, playerX, playerY) {
+    // Pre-calculate ray direction once
+    const rayDirX = Math.cos(rayAngle);
+    const rayDirY = Math.sin(rayAngle);
+    
+    // Pre-calculate step increments
+    const stepX = rayDirX * RAY_STEP;
+    const stepY = rayDirY * RAY_STEP;
+    
     let rayX = playerX;
     let rayY = playerY;
-    let rayDirX = Math.cos(rayAngle);
-    let rayDirY = Math.sin(rayAngle);
-    
     let distance = 0;
-    while (distance < 20) {
-        rayX += rayDirX * 0.1;
-        rayY += rayDirY * 0.1;
-        distance += 0.1;
+    
+    // Cache map bounds for faster bounds checking
+    const mapHeight = MAP.length;
+    const mapWidth = MAP[0].length;
+    
+    while (distance < MAX_DISTANCE) {
+        rayX += stepX;
+        rayY += stepY;
+        distance += RAY_STEP;
         
-        let mapX = Math.floor(rayX);
-        let mapY = Math.floor(rayY);
+        // Use bitwise OR 0 for faster integer conversion
+        const mapX = rayX | 0;
+        const mapY = rayY | 0;
         
-        if (MAP[mapY] && MAP[mapY][mapX] === 1) {
+        // Fast bounds check before array access
+        if (mapY >= 0 && mapY < mapHeight && mapX >= 0 && mapX < mapWidth && MAP[mapY][mapX] === 1) {
             return distance;
         }
     }
     return distance;
 }
 
+// Cache map dimensions for faster collision checks
+const MAP_HEIGHT = MAP.length;
+const MAP_WIDTH = MAP[0].length;
+
 export function checkWallCollision(x, y) {
-    const mapY = Math.floor(y);
-    const mapX = Math.floor(x);
-    return mapY >= 0 && mapY < MAP.length && mapX >= 0 && mapX < MAP[0].length && MAP[mapY][mapX] === 1;
+    // Use bitwise OR 0 for faster integer conversion
+    const mapY = y | 0;
+    const mapX = x | 0;
+    // Fast bounds check before array access
+    return mapY >= 0 && mapY < MAP_HEIGHT && mapX >= 0 && mapX < MAP_WIDTH && MAP[mapY][mapX] === 1;
 }
