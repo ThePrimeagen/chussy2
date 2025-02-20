@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pregnant Banana Landing Page</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        @keyframes rgbBackground {
+            0% { background: #ff0000; }
+            33% { background: #00ff00; }
+            66% { background: #0000ff; }
+            100% { background: #ff0000; }
+        }
         body {
             font-family: system-ui, -apple-system, sans-serif;
             display: flex;
@@ -13,7 +20,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background: #f0f0f0;
+            animation: rgbBackground 3s linear infinite;
         }
         .container {
             text-align: center;
@@ -51,9 +58,35 @@
             transform: translate(-50%, -50%) scale(1.2);
             animation: float 2s ease-in-out infinite;
         }
+        .anime-girl {
+            position: absolute;
+            font-size: 4rem;
+            animation: float 2s ease-in-out infinite;
+        }
+        .anime-girl.left {
+            left: 10%;
+            top: 50%;
+        }
+        .anime-girl.right {
+            right: 10%;
+            top: 50%;
+        }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const banana = document.querySelector('.banana');
+            banana.addEventListener('click', function() {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
+    <div class="anime-girl left">👧</div>
     <div class="container">
         <div 
             class="banana" 
@@ -67,5 +100,6 @@
         <h1>The Pregnant Banana</h1>
         <p>Click the banana to reveal its little surprise!</p>
     </div>
+    <div class="anime-girl right">👧</div>
 </body>
 </html>
