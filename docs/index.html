@@ -142,11 +142,6 @@
         window.restartGame = restartGame;
         gameLoop();
     </script>
-                x = player.x + Math.cos(angle) * distance;
-                y = player.y + Math.sin(angle) * distance;
-            } while (MAP[Math.floor(y)][Math.floor(x)] === 1);
-            
-            // Create enemy with health and position
             state.enemies.push({
                 x: x,
                 y: y,
