@@ -10,10 +10,10 @@ export function drawWalls(ctx, player, canvas) {
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Wall color based on player health
-        const healthFactor = player.health / player.maxHealth;
-        const redIntensity = Math.min(255, (255/distance) + (1-healthFactor) * 255);
-        const otherColors = (255/distance) * healthFactor;
+        // Improved wall visibility with stronger contrast
+        const baseIntensity = Math.min(255, (400/distance));
+        const redIntensity = baseIntensity;
+        const otherColors = baseIntensity * 0.6;  // Reduce other colors for better contrast
         ctx.fillStyle = `rgb(${redIntensity}, ${otherColors}, ${otherColors})`;
         ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
     }

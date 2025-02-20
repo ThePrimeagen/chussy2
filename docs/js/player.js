@@ -6,7 +6,9 @@ export const player = {
     y: 1.5,
     angle: 0,
     fov: GAME_CONFIG.FOV,
-    speed: GAME_CONFIG.PLAYER_SPEED,
+    speed: GAME_CONFIG.PLAYER_SPEED * 0.5,  // Reduced movement speed for better control
+    health: 100,
+    maxHealth: 100,
     arms: {
         swingOffset: 0,
         swingSpeed: 0.1
@@ -31,10 +33,10 @@ export function updatePlayerMovement(keys) {
         }
     }
     if (keys.a) {
-        player.angle -= 0.1;
+        player.angle -= 0.05;  // Reduced turn sensitivity
     }
     if (keys.d) {
-        player.angle += 0.1;
+        player.angle += 0.05;  // Reduced turn sensitivity
     }
 }
 
