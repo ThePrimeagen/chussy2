@@ -13,6 +13,20 @@ export const GAME_CONFIG = {
     },
     SOUND_EFFECTS: {
         GUNSHOT: 'data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'
+    },
+    SPRITES: {
+        ENEMIES: {
+            ANIME_GIRL_1: { src: 'sprites/anime_girl_1.png', width: 64, height: 64 },
+            ANIME_GIRL_2: { src: 'sprites/anime_girl_2.png', width: 64, height: 64 },
+            ANIME_GIRL_3: { src: 'sprites/anime_girl_3.png', width: 64, height: 64 },
+            ANIME_GIRL_4: { src: 'sprites/anime_girl_4.png', width: 64, height: 64 },
+            ANIME_GIRL_5: { src: 'sprites/anime_girl_5.png', width: 64, height: 64 },
+            ANIME_GIRL_6: { src: 'sprites/anime_girl_6.png', width: 64, height: 64 },
+            ANIME_GIRL_7: { src: 'sprites/anime_girl_7.png', width: 64, height: 64 },
+            ANIME_GIRL_8: { src: 'sprites/anime_girl_8.png', width: 64, height: 64 },
+            ANIME_GIRL_9: { src: 'sprites/anime_girl_9.png', width: 64, height: 64 },
+            ANIME_GIRL_10: { src: 'sprites/anime_girl_10.png', width: 64, height: 64 }
+        }
     }
 };
 
