@@ -16,9 +16,9 @@ export const GAME_CONFIG = {
     },
     SPRITES: {
         COLLECTIBLES: {
-            CHEESE_1: { src: 'resources/sprites/ships_packed.png', x: 96, y: 0, width: 32, height: 32 },
-            CHEESE_2: { src: 'resources/sprites/ships_packed.png', x: 128, y: 0, width: 32, height: 32 },
-            CHEESE_3: { src: 'resources/sprites/ships_packed.png', x: 160, y: 0, width: 32, height: 32 }
+            CHEESE_1: { src: 'resources/sprites/ships_packed.png', x: 256, y: 0, width: 32, height: 32 },
+            CHEESE_2: { src: 'resources/sprites/ships_packed.png', x: 288, y: 0, width: 32, height: 32 },
+            CHEESE_3: { src: 'resources/sprites/ships_packed.png', x: 320, y: 0, width: 32, height: 32 }
         },
         ENEMIES: {
             ENEMY_1: { src: 'resources/sprites/ships_packed.png', x: 0, y: 0, width: 32, height: 32 },
@@ -27,8 +27,8 @@ export const GAME_CONFIG = {
             ENEMY_4: { src: 'resources/sprites/ships_packed.png', x: 96, y: 0, width: 32, height: 32 },
             ENEMY_5: { src: 'resources/sprites/ships_packed.png', x: 128, y: 0, width: 32, height: 32 }
         },
-        BULLET: { src: 'resources/sprites/ships_packed.png', x: 0, y: 0, width: 16, height: 16 },
-        TARGET: { src: 'resources/sprites/ships_packed.png', x: 32, y: 0, width: 32, height: 32 }
+        BULLET: { src: 'resources/sprites/ships_packed.png', x: 192, y: 0, width: 16, height: 16 },
+        TARGET: { src: 'resources/sprites/ships_packed.png', x: 224, y: 0, width: 32, height: 32 }
     }
 };
 
@@ -43,14 +43,16 @@ export function worldToScreen(x, y, playerX, playerY, playerAngle, canvas) {
     const dy = y - playerY;
     const distance = Math.sqrt(dx * dx + dy * dy);
     
+    // Calculate angle in world space
     const angle = Math.atan2(dy, dx);
-    const relativeAngle = angle - playerAngle;
-    const normalizedAngle = ((relativeAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+    // Calculate relative angle for screen position only
+    const relativeAngle = ((angle - playerAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
     
-    const fov = Math.PI / 3;
-    const screenX = ((normalizedAngle / fov) + 1) * canvas.width / 2;
+    const fov = GAME_CONFIG.FOV;
+    // Project onto screen space while preserving world position
+    const screenX = ((relativeAngle / fov) + 1) * canvas.width / 2;
     const screenY = canvas.height / 2;
-    const size = (canvas.height / distance) * (Math.cos(normalizedAngle) * 0.8);
+    const size = (canvas.height / distance) * (Math.cos(relativeAngle) * 0.8);
     
     return { screenX, screenY, size, distance };
 }
@@ -60,8 +62,26 @@ export const spriteCache = {};
 export async function loadSprite(spriteName) {
     if (spriteCache[spriteName]) return spriteCache[spriteName];
     
-    const sprite = GAME_CONFIG.SPRITES[spriteName] || GAME_CONFIG.SPRITES.ENEMIES[spriteName];
-    if (!sprite) throw new Error(`Sprite ${spriteName} not found`);
+    let sprite;
+    if (spriteName === 'BULLET') {
+        sprite = GAME_CONFIG.SPRITES.BULLET;
+    } else if (spriteName.startsWith('ENEMY_')) {
+        sprite = GAME_CONFIG.SPRITES.ENEMIES[spriteName];
+    } else if (spriteName.startsWith('CHEESE_')) {
+        sprite = GAME_CONFIG.SPRITES.COLLECTIBLES[spriteName];
+    }
+    
+    if (!sprite) {
+        console.error(`Sprite ${spriteName} not found, using fallback`);
+        const canvas = document.createElement('canvas');
+        canvas.width = 16;
+        canvas.height = 16;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'yellow';
+        ctx.fillRect(0, 0, 16, 16);
+        spriteCache[spriteName] = canvas;
+        return canvas;
+    }
     
     const canvas = document.createElement('canvas');
     canvas.width = sprite.width;
@@ -82,6 +102,12 @@ export async function loadSprite(spriteName) {
             spriteCache[spriteName] = canvas;
             resolve(canvas);
         };
-        img.onerror = reject;
+        img.onerror = () => {
+            // Fallback to yellow square on error
+            ctx.fillStyle = 'yellow';
+            ctx.fillRect(0, 0, sprite.width, sprite.height);
+            spriteCache[spriteName] = canvas;
+            resolve(canvas);
+        };
     });
 }
