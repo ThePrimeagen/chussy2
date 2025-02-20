@@ -1,21 +1,9 @@
 import { GAME_CONFIG } from './utils.js';
 import { player } from './player.js';
-import { MAP, checkWallCollision, castRay } from './map.js';
-import { calculateDistance, spriteCache } from './utils.js';
+import { MAP, checkWallCollision } from './map.js';
+import { calculateDistance } from './utils.js';
 
 // *BEEP BOOP* Breaking circular dependency because SOMEONE didn't think about architecture... *MECHANICAL GROAN*
-function worldToScreen(x, y, playerX, playerY, playerAngle, canvas) {
-    const dx = x - playerX;
-    const dy = y - playerY;
-    const angle = Math.atan2(dy, dx);
-    const relativeAngle = ((angle - playerAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    const screenX = (Math.tan(relativeAngle) + 1) * canvas.width / 2;
-    const screenY = canvas.height / 2;
-    const size = canvas.height / distance;
-    return { screenX, screenY, size, distance };
-}
-
 export function spawnEnemy(state) {
     if (!state.enemies || !Array.isArray(state.enemies)) {
         state.enemies = [];
@@ -35,8 +23,10 @@ export function spawnEnemy(state) {
             x: x,
             y: y,
             health: 100,
-            type: 'ENEMY_1',  // Simplified to single enemy type
-            lastMove: Date.now()
+            type: 'ENEMY_1',
+            damage: 25,  // Increased damage per hit
+            lastMove: Date.now(),
+            lastAttack: 0
         });
     }
 }
@@ -60,11 +50,15 @@ export function updateEnemies(state, player) {
                 }
             }
 
-            // Damage player if too close
+            // Enhanced damage system
             if (dist < 0.5) {
-                state.player.health = Math.max(0, state.player.health - 0.5);
-                if (state.player.health <= 0) {
-                    state.gameOver = true;
+                const now = Date.now();
+                if (!enemy.lastAttack || now - enemy.lastAttack > 1000) {  // Attack once per second
+                    state.player.health = Math.max(0, state.player.health - enemy.damage);
+                    enemy.lastAttack = now;
+                    if (state.player.health <= 0) {
+                        state.gameOver = true;
+                    }
                 }
             }
         });
@@ -81,10 +75,6 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     const angle = Math.atan2(dy, dx);
     const relativeAngle = ((angle - player.angle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
     
-    // Check if enemy is behind a wall
-    const rayDistance = castRay(player.angle + relativeAngle, player.x, player.y);
-    if (rayDistance < distance) return;
-    
     const screenX = (Math.tan(relativeAngle) + 1) * canvas.width / 2;
     const screenY = canvas.height / 2;
     const size = canvas.height / distance;
@@ -92,11 +82,12 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     // Skip if outside view
     if (screenX < -size || screenX > canvas.width + size) return;
     
-    // Draw simple enemy shape
+    // Draw enemy with pulsing effect
     ctx.save();
+    const pulseScale = 1 + Math.sin(Date.now() * 0.005) * 0.2;
     ctx.fillStyle = '#ff0000';
     ctx.beginPath();
-    ctx.arc(screenX, screenY, size/4, 0, Math.PI * 2);
+    ctx.arc(screenX, screenY, (size/4) * pulseScale, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
 }

@@ -137,12 +137,12 @@ export function gameLoop() {
 initializeCanvases();
 setupInputHandlers(state);
 
-// Spawn enemies periodically in center
+// Spawn enemies periodically in center with increased rate
 setInterval(() => {
     if (!state.enemies || !Array.isArray(state.enemies) || state.enemies.length < 5) {
         spawnEnemy(state);
     }
-}, 5000);
+}, 3000);
 
 // Preload enemy sprites
 Object.keys(GAME_CONFIG.SPRITES.ENEMIES).forEach(async (spriteName) => {
