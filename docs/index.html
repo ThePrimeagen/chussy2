@@ -1,19 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Chussy Inferno 3D</title>
+    <title>Chussy Inferno 3D - Polski Edition</title>
     <style>
         body { 
             margin: 0; 
-            background: #000;
+            background: #000; 
             overflow: hidden;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
         }
         canvas { 
-            width: 100vw;
-            height: 100vh;
+            grid-column: 2 / 12;
+            grid-row: 2;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
         }
-        .ceo-approval {
+        .flame-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .flame {
+            position: absolute;
+            font-size: 24px;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            from { transform: translateY(-20px); }
+            to { transform: translateY(100vh); }
+        }
+        .game-title {
+            grid-column: 1 / -1;
+            grid-row: 1;
+            text-align: center;
+            color: #ff4400;
+            font-size: 48px;
+            text-shadow: 0 0 10px #ff0000;
+            z-index: 2;
+        }
+    .ceo-approval {
             position: fixed;
             bottom: 20px;
             left: 20px;
@@ -29,47 +62,36 @@
             border: 2px solid #ff4400;
             box-shadow: 0 0 10px #ff0000;
         }
-        .tos-link {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            color: #ff4400;
-            text-decoration: none;
-            font-family: 'Comic Sans MS', cursive;
-            text-shadow: 0 0 5px #ff0000;
-            z-index: 2;
-        }
     </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOURPUBID"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
+    <h1 class="game-title">🔥 CHUSSY DEEZ PIEROGI INFERNO 3D 🔥</h1>
+    <div class="flame-container" id="flameContainer"></div>
     <canvas id="gameCanvas"></canvas>
     <div class="ceo-approval">
         <p>I approve of this webpage</p>
         <img src="https://avatars.githubusercontent.com/u/4442245" alt="ThePrimeagen CEO">
     </div>
-    <a href="termsofservice.html" class="tos-link">Sussy Terms of Service</a>
-    <!-- IE Compatibility polyfills -->
     <script>
-        if (!window.requestAnimationFrame) {
-            window.requestAnimationFrame = function(callback) {
-                return setTimeout(callback, 1000 / 60);
-            };
-        }
-        if (!Array.prototype.forEach) {
-            Array.prototype.forEach = function(callback) {
-                for (var i = 0; i < this.length; i++) {
-                    callback(this[i], i, this);
-                }
-            };
-        }
-    </script>
-    <script>
+        // Key state tracking
+        const keys = {
+            w: false,
+            s: false,
+            a: false,
+            d: false,
+            ' ': false
+        };
+
         // Game state
         const state = {
             projectiles: [],
-            enemies: []
+            enemies: [],
+            lastShot: 0,
+            shootCooldown: 250, // milliseconds
+            player: {
+                health: 100,
+                maxHealth: 100
+            }
         };
 
         // Map data
@@ -121,6 +143,121 @@
             return distance;
         }
 
+        // Spawn enemies
+        function spawnEnemy() {
+            // Spawn enemies as Polish Hussars
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 5;
+            state.enemies.push({
+                x: player.x + Math.cos(angle) * distance,
+                y: player.y + Math.sin(angle) * distance,
+                health: 100,
+                type: 'hussar'  // Polish Winged Hussars
+            });
+        }
+        setInterval(spawnEnemy, 5000);
+
+        // Shooting mechanics
+        function shoot() {
+            const now = Date.now();
+            if (now - state.lastShot >= state.shootCooldown) {
+                state.projectiles.push({
+                    x: player.x,
+                    y: player.y,
+                    angle: player.angle,
+                    speed: 0.5
+                });
+                state.lastShot = now;
+            }
+        }
+
+        // Update projectiles and enemies
+        function updateEntities() {
+            // Handle continuous movement
+            if (keys.w) {
+                const newX = player.x + Math.cos(player.angle) * player.speed;
+                const newY = player.y + Math.sin(player.angle) * player.speed;
+                // Check wall collision before moving
+                if (!MAP[Math.floor(newY)][Math.floor(newX)]) {
+                    player.x = newX;
+                    player.y = newY;
+                }
+            }
+            if (keys.s) {
+                const newX = player.x - Math.cos(player.angle) * player.speed;
+                const newY = player.y - Math.sin(player.angle) * player.speed;
+                // Check wall collision before moving
+                if (!MAP[Math.floor(newY)][Math.floor(newX)]) {
+                    player.x = newX;
+                    player.y = newY;
+                }
+            }
+            if (keys.a) {
+                player.angle -= 0.1;
+            }
+            if (keys.d) {
+                player.angle += 0.1;
+            }
+
+            // Handle shooting
+            if (keys[' ']) {
+                shoot();
+            }
+
+            // Update projectiles
+            for (let i = state.projectiles.length - 1; i >= 0; i--) {
+                const proj = state.projectiles[i];
+                proj.x += Math.cos(proj.angle) * proj.speed;
+                proj.y += Math.sin(proj.angle) * proj.speed;
+                
+                // Check collision with walls
+                if (MAP[Math.floor(proj.y)][Math.floor(proj.x)] === 1) {
+                    state.projectiles.splice(i, 1);
+                    continue;
+                }
+
+                // Check collision with enemies
+                for (let j = state.enemies.length - 1; j >= 0; j--) {
+                    const enemy = state.enemies[j];
+                    const dx = proj.x - enemy.x;
+                    const dy = proj.y - enemy.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 0.5) {
+                        enemy.health -= 50;
+                        if (enemy.health <= 0) {
+                            state.enemies.splice(j, 1);
+                        }
+                        state.projectiles.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+
+            // Update enemies and handle collision/damage
+            state.enemies.forEach(enemy => {
+                const dx = player.x - enemy.x;
+                const dy = player.y - enemy.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                // Enemy movement with wall collision detection
+                if (dist > 0.1) {
+                    const newX = enemy.x + (dx / dist) * 0.03;
+                    const newY = enemy.y + (dy / dist) * 0.03;
+                    
+                    // Check wall collision before moving
+                    if (!MAP[Math.floor(newY)][Math.floor(newX)]) {
+                        enemy.x = newX;
+                        enemy.y = newY;
+                    }
+                }
+                
+                // Damage player if too close
+                if (dist < 0.5) {
+                    state.player.health = Math.max(0, state.player.health - 0.5);
+                }
+            });
+        }
+
         function drawFrame() {
             ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -133,33 +270,46 @@
                 const distance = castRay(rayAngle);
                 const wallHeight = canvas.height / distance;
                 
-                ctx.fillStyle = `rgb(${255/distance}, ${255/distance}, ${255/distance})`;
+                // Wall color based on player health
+                const healthFactor = state.player.health / state.player.maxHealth;
+                const redIntensity = Math.min(255, (255/distance) + (1-healthFactor) * 255);
+                const otherColors = (255/distance) * healthFactor;
+                ctx.fillStyle = `rgb(${redIntensity}, ${otherColors}, ${otherColors})`;
                 ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
+
+                // Draw health HUD
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(10, 10, 200 * (state.player.health / state.player.maxHealth), 20);
+                ctx.strokeStyle = '#ffffff';
+                ctx.strokeRect(10, 10, 200, 20);
             }
             
+            updateEntities();
             requestAnimationFrame(drawFrame);
         }
 
         // Input handling
+        // Create falling flame emojis
+        function createFlame() {
+            const flame = document.createElement('div');
+            flame.className = 'flame';
+            flame.textContent = Math.random() > 0.5 ? '🔥' : '🥟';
+            flame.style.left = Math.random() * 100 + 'vw';
+            flame.style.animationDuration = Math.random() * 3 + 2 + 's';
+            document.getElementById('flameContainer').appendChild(flame);
+            flame.addEventListener('animationend', () => flame.remove());
+        }
+        setInterval(createFlame, 500);
+
         document.addEventListener('keydown', (e) => {
-            switch(e.key) {
-                case 'w':
-                    player.x += Math.cos(player.angle) * player.speed;
-                    player.y += Math.sin(player.angle) * player.speed;
-                    break;
-                case 's':
-                    player.x -= Math.cos(player.angle) * player.speed;
-                    player.y -= Math.sin(player.angle) * player.speed;
-                    break;
-                case 'a':
-                    player.angle -= 0.1;
-                    break;
-                case 'd':
-                    player.angle += 0.1;
-                    break;
-                case ' ':
-                    // Shooting mechanic
-                    break;
+            if (e.key in keys) {
+                keys[e.key] = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key in keys) {
+                keys[e.key] = false;
             }
         });
 
