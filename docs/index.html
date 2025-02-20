@@ -13,12 +13,43 @@
             width: 100vw;
             height: 100vh;
         }
+        .ceo-approval {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 2;
+            text-align: center;
+            color: #ff4400;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        .ceo-approval img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #ff4400;
+            box-shadow: 0 0 10px #ff0000;
+        }
+        .tos-link {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: #ff4400;
+            text-decoration: none;
+            font-family: 'Comic Sans MS', cursive;
+            text-shadow: 0 0 5px #ff0000;
+            z-index: 2;
+        }
     </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOURPUBID"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
+    <div class="ceo-approval">
+        <p>I approve of this webpage</p>
+        <img src="https://avatars.githubusercontent.com/u/4442245" alt="ThePrimeagen CEO">
+    </div>
+    <a href="termsofservice.html" class="tos-link">Sussy Terms of Service</a>
     <!-- IE Compatibility polyfills -->
     <script>
         if (!window.requestAnimationFrame) {
