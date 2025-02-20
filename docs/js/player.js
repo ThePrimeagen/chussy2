@@ -49,16 +49,17 @@ export function updatePlayerMovement(keys) {
         player.velocity.y = 0;
     }
     
-    // Smoother turning
-    // Apply rotation acceleration
+    // Strafing movement (A/D keys)
     if (keys.a) {
-        player.rotationVelocity -= player.rotationAcceleration;
+        player.velocity.x += Math.cos(player.angle - Math.PI/2) * player.acceleration;
+        player.velocity.y += Math.sin(player.angle - Math.PI/2) * player.acceleration;
     }
     if (keys.d) {
-        player.rotationVelocity += player.rotationAcceleration;
+        player.velocity.x += Math.cos(player.angle + Math.PI/2) * player.acceleration;
+        player.velocity.y += Math.sin(player.angle + Math.PI/2) * player.acceleration;
     }
     
-    // Apply rotation friction
+    // Mouse controls rotation now, so we just apply rotation friction
     player.rotationVelocity *= player.rotationFriction;
     player.angle += player.rotationVelocity;
 }
