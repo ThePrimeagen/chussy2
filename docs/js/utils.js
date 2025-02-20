@@ -16,9 +16,9 @@ export const GAME_CONFIG = {
     },
     SPRITES: {
         COLLECTIBLES: {
-            CHEESE_1: { src: 'sprites/cheese_1.png', width: 32, height: 32 },
-            CHEESE_2: { src: 'sprites/cheese_2.png', width: 32, height: 32 },
-            CHEESE_3: { src: 'sprites/cheese_3.png', width: 32, height: 32 }
+            CHEESE_1: { src: 'resources/sprites/ships_packed.png', x: 96, y: 0, width: 32, height: 32 },
+            CHEESE_2: { src: 'resources/sprites/ships_packed.png', x: 128, y: 0, width: 32, height: 32 },
+            CHEESE_3: { src: 'resources/sprites/ships_packed.png', x: 160, y: 0, width: 32, height: 32 }
         },
         ENEMIES: {
             ENEMY_1: { src: 'resources/sprites/ships_packed.png', x: 0, y: 0, width: 32, height: 32 },
@@ -27,8 +27,8 @@ export const GAME_CONFIG = {
             ENEMY_4: { src: 'resources/sprites/ships_packed.png', x: 96, y: 0, width: 32, height: 32 },
             ENEMY_5: { src: 'resources/sprites/ships_packed.png', x: 128, y: 0, width: 32, height: 32 }
         },
-        BULLET: { src: 'sprites/cheese_1.png', width: 16, height: 16 },
-        TARGET: { src: 'sprites/cheese_2.png', width: 32, height: 32 }
+        BULLET: { src: 'resources/sprites/ships_packed.png', x: 0, y: 0, width: 16, height: 16 },
+        TARGET: { src: 'resources/sprites/ships_packed.png', x: 32, y: 0, width: 32, height: 32 }
     }
 };
 
@@ -60,22 +60,19 @@ export const spriteCache = {};
 export async function loadSprite(spriteName) {
     if (spriteCache[spriteName]) return spriteCache[spriteName];
     
-    const sprite = GAME_CONFIG.SPRITES.ENEMIES[spriteName];
+    const sprite = GAME_CONFIG.SPRITES[spriteName] || GAME_CONFIG.SPRITES.ENEMIES[spriteName];
     if (!sprite) throw new Error(`Sprite ${spriteName} not found`);
     
-    // Create offscreen canvas for sprite sheet cropping *BEEP BOOP*
     const canvas = document.createElement('canvas');
     canvas.width = sprite.width;
     canvas.height = sprite.height;
     const ctx = canvas.getContext('2d');
     
-    // Load sprite sheet
     const img = new Image();
     img.src = sprite.src;
     
     return new Promise((resolve, reject) => {
         img.onload = () => {
-            // Crop sprite from sheet *WHIRR*
             ctx.drawImage(img, 
                 sprite.x || 0, sprite.y || 0, 
                 sprite.width, sprite.height,

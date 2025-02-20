@@ -231,22 +231,20 @@ Object.keys(GAME_CONFIG.SPRITES.ENEMIES).forEach(async (spriteName) => {
     }
 });
 
-// Load bullet sprite
-loadSprite('BULLET').then(sprite => {
-    spriteCache['BULLET'] = sprite;
-}).catch(error => {
-    console.error('Failed to load bullet sprite:', error);
-});
+
 
 // Preload enemy sprites before starting game
 async function initGame() {
     try {
-        const spritePromises = Object.keys(GAME_CONFIG.SPRITES.ENEMIES).map(spriteName => loadSprite(spriteName));
+        const spritePromises = [
+            ...Object.keys(GAME_CONFIG.SPRITES.ENEMIES).map(spriteName => loadSprite(spriteName)),
+            loadSprite('BULLET')
+        ];
         await Promise.all(spritePromises);
-        console.log('All enemy sprites loaded successfully');
+        console.log('All sprites loaded successfully');
         gameLoop();
     } catch (error) {
-        console.error('Failed to load enemy sprites:', error);
+        console.error('Failed to load sprites:', error);
     }
 }
 
