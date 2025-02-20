@@ -75,35 +75,37 @@ export function updateEnemies(state, player) {
     }
 }
 
-// Simple enemy rendering
+// Enemy rendering with health bars
 export function renderEnemy(ctx, enemy, player, canvas) {
     if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') return;
     
-    const dx = enemy.x - player.x;
-    const dy = enemy.y - player.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    const angle = Math.atan2(dy, dx);
-    const relativeAngle = ((angle - player.angle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+    const { screenX, screenY, size, distance } = worldToScreen(enemy.x, enemy.y, player.x, player.y, player.angle, canvas);
     
-    // Check if enemy is behind a wall
-    const rayDistance = castRay(player.angle + relativeAngle, player.x, player.y);
+    // Skip if behind wall
+    const rayDistance = castRay(player.angle + Math.atan2(enemy.y - player.y, enemy.x - player.x), player.x, player.y);
     if (rayDistance < distance) return;
-    
-    const screenX = (Math.tan(relativeAngle) + 1) * canvas.width / 2;
-    const screenY = canvas.height / 2;
-    
-    // Calculate size with max constraint
-    const maxSize = canvas.height / 4;
-    const size = Math.min(maxSize, canvas.height / distance);
     
     // Skip if outside view
     if (screenX < -size || screenX > canvas.width + size) return;
     
-    // Draw simple enemy shape
+    // Draw enemy with depth of field
     ctx.save();
+    const blurAmount = Math.min(5, Math.max(0, distance - 2) / 2);
+    ctx.filter = `blur(${blurAmount}px)`;
     ctx.fillStyle = '#ff0000';
     ctx.beginPath();
     ctx.arc(screenX, screenY, size/4, 0, Math.PI * 2);
     ctx.fill();
+    
+    // Draw health bar
+    const healthBarWidth = size/2;
+    const healthBarHeight = size/10;
+    const healthPercent = enemy.health / 100;
+    
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(screenX - healthBarWidth/2, screenY - size/3, healthBarWidth, healthBarHeight);
+    ctx.fillStyle = '#00ff00';
+    ctx.fillRect(screenX - healthBarWidth/2, screenY - size/3, healthBarWidth * healthPercent, healthBarHeight);
+    ctx.filter = 'none';
     ctx.restore();
 }
