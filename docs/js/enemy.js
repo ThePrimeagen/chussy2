@@ -1,6 +1,19 @@
 import { GAME_CONFIG } from './utils.js';
-import { checkWallCollision, MAP } from './map.js';
-import { calculateDistance, worldToScreen } from './utils.js';
+import { MAP, checkWallCollision } from './map.js';
+import { calculateDistance } from './utils.js';
+
+// *BEEP BOOP* Breaking circular dependency because SOMEONE didn't think about architecture... *MECHANICAL GROAN*
+function worldToScreen(x, y, playerX, playerY, playerAngle, canvas) {
+    const dx = x - playerX;
+    const dy = y - playerY;
+    const angle = Math.atan2(dy, dx);
+    const relativeAngle = ((angle - playerAngle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const screenX = (Math.tan(relativeAngle) + 1) * canvas.width / 2;
+    const screenY = canvas.height / 2;
+    const size = canvas.height / distance;
+    return { screenX, screenY, size, distance };
+}
 
 export function spawnEnemy(state, playerX, playerY) {
     if (!state.enemies || !Array.isArray(state.enemies)) {
