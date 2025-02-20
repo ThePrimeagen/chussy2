@@ -3,6 +3,15 @@
 <head>
     <title>Chussy Inferno 3D - Polski Edition</title>
     <style>
+        /* Preload our textures */
+        body::after {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            z-index: -1;
+            content: url('https://i.imgur.com/dQw4w9g.jpg') url('https://i.imgur.com/hz4DUtx.gif');
+        }
         body { 
             margin: 0; 
             background: #000; 
@@ -99,8 +108,16 @@
                 targetEnemy: null,
                 nextMoveTime: 0,
                 moveInterval: 1000 // Change direction every second
+            },
+            textures: {
+                rickroll: new Image(),
+                hypnotoad: new Image()
             }
         };
+
+        // Load textures
+        state.textures.rickroll.src = 'https://i.imgur.com/dQw4w9g.jpg';
+        state.textures.hypnotoad.src = 'https://i.imgur.com/hz4DUtx.gif';
 
         // Map data
         const MAP = [
@@ -329,12 +346,21 @@
                 const distance = castRay(rayAngle);
                 const wallHeight = canvas.height / distance;
                 
-                // Wall color based on player health
-                const healthFactor = state.player.health / state.player.maxHealth;
-                const redIntensity = Math.min(255, (255/distance) + (1-healthFactor) * 255);
-                const otherColors = (255/distance) * healthFactor;
-                ctx.fillStyle = `rgb(${redIntensity}, ${otherColors}, ${otherColors})`;
+                // Draw blue sky
+                ctx.fillStyle = '#87CEEB';
+                ctx.fillRect(i, 0, 1, (canvas.height-wallHeight)/2);
+                
+                // Wall texture based on position
+                const texture = (Math.floor(rayX) + Math.floor(rayY)) % 2 === 0 
+                    ? state.textures.rickroll 
+                    : state.textures.hypnotoad;
+                
+                // Create pattern and tint based on health
+                const pattern = ctx.createPattern(texture, 'repeat');
+                ctx.fillStyle = pattern;
+                ctx.globalAlpha = state.player.health / state.player.maxHealth;
                 ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
+                ctx.globalAlpha = 1.0;
 
                 // Draw player arms
                 if (i === Math.floor(canvas.width * 0.3) || i === Math.floor(canvas.width * 0.7)) {
