@@ -1,4 +1,5 @@
 import { player } from './player.js';
+import { shoot } from './player.js';
 
 export const keys = {
     w: false,
@@ -83,6 +84,26 @@ export function setupInputHandlers(state) {
             keys[e.key] = false;
             state.autoplay.lastActivity = Date.now();
         }
+    });
+    
+    // Add mouse click shooting *BEEP BOOP*
+    document.addEventListener('click', (e) => {
+        shoot(state);
+        state.autoplay.enabled = false;
+        state.autoplay.lastActivity = Date.now();
+        
+        // Add yellow star flash *WHIRR*
+        const flash = document.createElement('div');
+        flash.innerHTML = '⭐';
+        flash.style.position = 'absolute';
+        flash.style.left = e.clientX + 'px';
+        flash.style.top = e.clientY + 'px';
+        flash.style.color = '#ffff00';
+        flash.style.animation = 'flash 0.2s forwards';
+        flash.style.pointerEvents = 'none';
+        flash.style.zIndex = '9999';
+        document.body.appendChild(flash);
+        setTimeout(() => flash.remove(), 200);
     });
 
     setInterval(createFlame, 500);
