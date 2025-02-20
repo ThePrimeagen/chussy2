@@ -7,7 +7,7 @@ function runTests() {
     console.assert(state.coins && Array.isArray(state.coins), 'state.coins should be initialized as array');
     console.assert(state.projectiles && Array.isArray(state.projectiles), 'state.projectiles should be initialized as array');
     
-    // Test player movement
+    // Test player movement.
     const originalX = state.player.x;
     const originalY = state.player.y;
     state.keys.forward = true;
