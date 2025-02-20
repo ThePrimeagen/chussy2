@@ -16,7 +16,7 @@ Making enemies super visible with the power of friendship! 🌟
 * Using bright colors and strong outlines for maximum visibility
 * Ensuring they stand out against the dark background
 
-## Enhanced Enemy Visibility and Chad Arms (2025-02-20)
+## Enhanced Enemy Visibility and Chad Arms (2025-02-20 02:12:56 UTC)
 Time to make those enemies even more EPIC! 💪
 * Improving distance indicators with clear, easy-to-read text
 * Adding color-coded distance warnings (red = close, yellow = medium, green = far)
@@ -24,5 +24,14 @@ Time to make those enemies even more EPIC! 💪
 * Adding pulsing effect to nearby enemies for extra awareness
 * Giving enemies CHAD ARMS to show their true strength
 * Using bold fonts and contrasting colors for maximum readability
+
+## Debug Minimap Implementation (2025-02-20 02:12:56 UTC)
+Added a powerful debug minimap to track all game elements! 🎮
+* Positioned in top-right corner for easy visibility
+* Player shown as red square for instant recognition
+* Enemies displayed as yellow squares for clear tracking
+* Wall bounds drawn with orange lines for map layout
+* Real-time updates for accurate position tracking
+* Proper scaling to maintain map proportions
 
 Let's make this codebase even more awesome together! 🍥
