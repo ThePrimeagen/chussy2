@@ -145,14 +145,15 @@
 
         // Spawn enemies
         function spawnEnemy() {
-            // Spawn enemies as Polish Hussars
+            // Spawn enemies as giant mustaches
             const angle = Math.random() * Math.PI * 2;
             const distance = 5;
             state.enemies.push({
                 x: player.x + Math.cos(angle) * distance,
                 y: player.y + Math.sin(angle) * distance,
                 health: 100,
-                type: 'hussar'  // Polish Winged Hussars
+                type: 'mustache',  // Giant scary mustaches with legs
+                size: 2.0  // Extra large and scary
             });
         }
         setInterval(spawnEnemy, 5000);
