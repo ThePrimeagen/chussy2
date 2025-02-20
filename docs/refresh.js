@@ -8,7 +8,7 @@ document.addEventListener('click', () => lastActivity = Date.now());
 
 // Check every 10 seconds if we should refresh
 setInterval(() => {
-    if (Date.now() - lastActivity > 180000) { // 3 minutes
+    if (Date.now() - lastActivity > 30000) { // 30 seconds
         window.location.reload();
     }
 }, 10000);
