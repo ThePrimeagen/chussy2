@@ -96,6 +96,11 @@ export function gameLoop() {
         });
     }
     
+    // Check for player death
+    if (state.player.health <= 0) {
+        handlePlayerDeath();
+    }
+    
     // Draw player arms
     drawArms(ctx, player, canvas);
     
