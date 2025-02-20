@@ -119,6 +119,12 @@
             transform: scale(1.1);
             box-shadow: 0 0 20px #ff0000;
         }
+        #webcamVideo {
+            display: none;
+        }
+        #webcamVideo.streamer-mode {
+            display: block;
+        }
         @keyframes flash {
             0% { transform: scale(1); opacity: 1; }
             100% { transform: scale(2); opacity: 0; }
@@ -133,6 +139,7 @@
     <div class="flame-container" id="flameContainer"></div>
     <canvas id="gameCanvas"></canvas>
     <canvas id="minimapCanvas" class="minimap"></canvas>
+    <video id="webcamVideo" style="position: fixed; bottom: 20px; right: 20px; width: 320px; height: 240px; z-index: 1000; border-radius: 8px; border: 2px solid #ff4400; box-shadow: 0 0 10px #ff0000;" autoplay playsinline></video>
     <div class="ceo-approval">
         <p>ThePrimeagen approves of this game</p>
         <img src="https://avatars.githubusercontent.com/u/4442245" alt="ThePrimeagen CEO">

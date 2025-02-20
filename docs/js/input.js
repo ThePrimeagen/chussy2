@@ -77,6 +77,11 @@ export function setupInputHandlers(state) {
             state.autoplay.enabled = false;
             state.autoplay.lastActivity = Date.now();
         }
+        // Toggle streamer mode with 'V' key
+        if (e.key.toLowerCase() === 'v') {
+            const webcam = document.getElementById('webcamVideo');
+            webcam.classList.toggle('streamer-mode');
+        }
     });
 
     document.addEventListener('keyup', (e) => {
