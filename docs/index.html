@@ -448,7 +448,7 @@
                     }
                 }
             });
-        }
+        }  // Close updateEntities function from line 345
 
         function drawFrame() {
             // Don't update if game is over
@@ -575,7 +575,7 @@
                 });
             }
             
-            // Draw walls
+            // Draw walls first (behind enemies)
             const numRays = canvas.width;
             const rayStep = player.fov / numRays;
             
@@ -590,20 +590,57 @@
                 const otherColors = (255/distance) * healthFactor;
                 ctx.fillStyle = `rgb(${redIntensity}, ${otherColors}, ${otherColors})`;
                 ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
+            }
 
-                // Draw player arms
+            // Draw enemies on top of walls
+            if (state.enemies && Array.isArray(state.enemies)) {
+                state.enemies.forEach(enemy => {
+                    if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') return;
+                    
+                    // Calculate screen position
+                    const dx = enemy.x - player.x;
+                    const dy = enemy.y - player.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Convert world space to screen space
+                    const angle = Math.atan2(dy, dx) - player.angle;
+                    const screenX = (Math.tan(angle) + 1) * canvas.width / 2;
+                    const screenY = canvas.height / 2;
+                    const size = canvas.height / distance;
+                    
+                    // Draw enemy with bright colors
+                    ctx.fillStyle = '#ff4400';
+                    ctx.strokeStyle = '#ff0000';
+                    ctx.lineWidth = 4;
+                    ctx.shadowBlur = 20;
+                    ctx.shadowColor = '#ff0000';
+                    
+                    // Draw enemy body
+                    ctx.fillRect(screenX - size/2, screenY - size/2, size, size);
+                    ctx.strokeRect(screenX - size/2, screenY - size/2, size, size);
+                    
+                    // Draw distance indicator
+                    ctx.font = 'bold 16px "Press Start 2P"';
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = '#ff0000';
+                    ctx.fillText(`${Math.floor(distance)}m`, screenX, screenY - size/2 - 10);
+                });
+            }
+
+            // Draw player arms
+            for (let i = 0; i < numRays; i++) {
                 if (i === Math.floor(canvas.width * 0.3) || i === Math.floor(canvas.width * 0.7)) {
                     const armSwing = Math.sin(player.arms.swingOffset) * 20;
                     ctx.fillStyle = '#8B4513';  // Brown color for arms
                     ctx.fillRect(i, canvas.height - 100 + armSwing, 10, 100);
                 }
-
-                // Draw health HUD
-                ctx.fillStyle = '#ff0000';
-                ctx.fillRect(10, 10, 200 * (state.player.health / state.player.maxHealth), 20);
-                ctx.strokeStyle = '#ffffff';
-                ctx.strokeRect(10, 10, 200, 20);
             }
+
+            // Draw health HUD on top
+            ctx.fillStyle = '#ff0000';
+            ctx.fillRect(10, 10, 200 * (state.player.health / state.player.maxHealth), 20);
+            ctx.strokeStyle = '#ffffff';
+            ctx.strokeRect(10, 10, 200, 20);
             
             // Update arm swing animation
             if (keys.w || keys.s) {
@@ -645,5 +682,91 @@
 
         drawFrame();
     </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </body>
 </html>
