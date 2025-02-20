@@ -65,7 +65,7 @@ export function updatePlayerMovement(keys) {
 
 export function shoot(state) {
     const now = Date.now();
-    if (now - state.lastShot >= state.shootCooldown) {
+    if (now - state.lastShot >= state.shootCooldown && state.bullets > 0) {
         // Create bullet from center of screen (crosshair position)
         const bulletDistance = 0.25;  // Reduced distance to match centered crosshair
         state.projectiles.push({
@@ -78,5 +78,6 @@ export function shoot(state) {
             created: now
         });
         state.lastShot = now;
+        state.bullets--;
     }
 }

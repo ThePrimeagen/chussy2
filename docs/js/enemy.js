@@ -128,9 +128,12 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     
     // Draw enemy with proper z-indexing and health bar
     ctx.save();
-    ctx.fillStyle = '#ff0000';
+    ctx.fillStyle = '#ffff00';  // Yellow for cheese theme
     ctx.beginPath();
-    ctx.arc(screenX, screenY, size/4, 0, Math.PI * 2);
+    ctx.moveTo(screenX, screenY - size/2);  // Top point
+    ctx.lineTo(screenX - size/2, screenY + size/2);  // Bottom left
+    ctx.lineTo(screenX + size/2, screenY + size/2);  // Bottom right
+    ctx.closePath();
     ctx.fill();
     
     // Draw health bar

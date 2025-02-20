@@ -48,6 +48,8 @@ export const state = {
     lastShot: 0,
     shootCooldown: 250,
     player: player,
+    bullets: 30,  // Current bullets
+    maxBullets: 30,  // Max bullets,
     autoplay: {
         enabled: false,
         lastActivity: Date.now(),
