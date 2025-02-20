@@ -166,15 +166,16 @@ export function gameLoop(timestamp) {
                 ctx.save();
                 const sprite = spriteCache['BULLET'];
                 if (sprite) {
-                    const width = Math.max(4, size * 0.5);  // Even smaller bullets per ThePrimeagen
+                    const width = Math.max(12, size * 0.6);  // Visible yellow bullets per ThePrimeagen
                     const height = width;
-                    ctx.drawImage(
-                        sprite,
-                        screenX - width/2,
-                        screenY - height/2,
-                        width,
-                        height
-                    );
+                    
+                    // Draw yellow bullet
+                    ctx.save();
+                    ctx.fillStyle = 'yellow';
+                    ctx.beginPath();
+                    ctx.arc(screenX, screenY, width/2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
                 }
                 ctx.restore();
             }
