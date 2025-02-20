@@ -31,22 +31,20 @@ export function drawHUD(ctx, state) {
     ctx.strokeStyle = '#ffffff';
     ctx.strokeRect(10, 10, 200, 20);
     
-    // Crosshair
-    const centerX = ctx.canvas.width / 2;
-    const centerY = ctx.canvas.height / 2;
-    const size = 20;
+    // Crosshair - perfectly centered with pixel-perfect alignment
+    const centerX = Math.floor(ctx.canvas.width / 2) + 0.5;  // Add 0.5 for crisp lines
+    const centerY = Math.floor(ctx.canvas.height / 2) + 0.5;
+    const size = 16;  // Slightly smaller for better precision
     
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1;  // Thinner lines for precision
     
-    // Horizontal line
+    // Draw crosshair with single path for better performance
     ctx.beginPath();
+    // Horizontal line
     ctx.moveTo(centerX - size/2, centerY);
     ctx.lineTo(centerX + size/2, centerY);
-    ctx.stroke();
-    
     // Vertical line
-    ctx.beginPath();
     ctx.moveTo(centerX, centerY - size/2);
     ctx.lineTo(centerX, centerY + size/2);
     ctx.stroke();
