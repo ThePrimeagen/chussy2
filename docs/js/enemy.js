@@ -56,6 +56,18 @@ export function updateEnemies(state, player) {
             const dy = player.y - enemy.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             
+            // Handle damage on click for cheese enemy
+            if (enemy.type === 'CHEESE_ENEMY' && enemy.clicked) {
+                enemy.health -= 20;
+                enemy.clicked = false;
+                
+                // Remove if health depleted
+                if (enemy.health <= 0) {
+                    state.enemies.splice(i, 1);
+                    continue;
+                }
+            }
+            
             // Remove enemy on collision
             if (dist < 0.5) {
                 state.enemies.splice(i, 1);

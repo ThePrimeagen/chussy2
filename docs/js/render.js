@@ -33,8 +33,10 @@ export function drawWalls(ctx, player, canvas) {
     ctx.fillStyle = floorGradient;
     ctx.fillRect(0, canvas.height/2, canvas.width, canvas.height/2);
 
+    // Initialize raytracer with z-buffer
     const numRays = canvas.width;
     const rayStep = player.fov / numRays;
+    const zBuffer = new Float32Array(numRays);
     
     // Pre-calculate color maps for better performance
     const colorMaps = [
@@ -45,15 +47,22 @@ export function drawWalls(ctx, player, canvas) {
         { hue: 300, sat: 70, light: 50 }   // Purple
     ];
     
+    // First pass: Calculate z-buffer and render walls
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
         const distance = castRay(rayAngle, player.x, player.y);
-        const wallHeight = canvas.height / distance;
+        
+        // Store in z-buffer for sprite depth sorting
+        zBuffer[i] = distance;
+        
+        // Apply perspective correction
+        const perpDistance = distance * Math.cos(rayAngle - player.angle);
+        const wallHeight = (canvas.height / perpDistance) * 0.9; // 0.9 factor for better perspective
         
         // Use pre-calculated colors with smooth transitions
         const colorIndex = (colorTime + Math.floor(i / (numRays / colorMaps.length))) % colorMaps.length;
         const color = colorMaps[colorIndex];
-        const intensity = Math.min(100, (400/distance));
+        const intensity = Math.min(100, (400/perpDistance));
         const wallColor = `hsl(${color.hue}, ${color.sat}%, ${intensity}%)`;
         const outlineColor = `hsl(${color.hue}, ${color.sat}%, ${intensity * 0.8}%)`;
         
@@ -62,6 +71,10 @@ export function drawWalls(ctx, player, canvas) {
         ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
         ctx.strokeStyle = outlineColor;
         ctx.strokeRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
+    }
+    
+    // Store z-buffer for sprite rendering
+    window.zBuffer = zBuffer;
     }
 }
 
