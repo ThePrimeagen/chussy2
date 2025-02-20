@@ -2,6 +2,20 @@ import { castRay, MAP } from './map.js';
 import { GAME_CONFIG } from './utils.js';
 
 export function drawWalls(ctx, player, canvas) {
+    // *SIGH* Fine, here's your skybox... *BEEP BOOP*
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#000033');  // Night sky
+    gradient.addColorStop(0.5, '#0066cc'); // Horizon
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // *MECHANICAL GROAN* And the floor you demanded...
+    const floorGradient = ctx.createLinearGradient(0, canvas.height/2, 0, canvas.height);
+    floorGradient.addColorStop(0, '#666666');  // Far floor
+    floorGradient.addColorStop(1, '#333333');  // Near floor
+    ctx.fillStyle = floorGradient;
+    ctx.fillRect(0, canvas.height/2, canvas.width, canvas.height/2);
+
     const numRays = canvas.width;
     const rayStep = player.fov / numRays;
     
