@@ -25,10 +25,31 @@ export function drawWalls(ctx, player, canvas) {
 }
 
 export function drawHUD(ctx, state) {
+    // Health bar
     ctx.fillStyle = '#ff0000';
     ctx.fillRect(10, 10, 200 * (state.player.health / state.player.maxHealth), 20);
     ctx.strokeStyle = '#ffffff';
     ctx.strokeRect(10, 10, 200, 20);
+    
+    // Crosshair
+    const centerX = ctx.canvas.width / 2;
+    const centerY = ctx.canvas.height / 2;
+    const size = 20;
+    
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    
+    // Horizontal line
+    ctx.beginPath();
+    ctx.moveTo(centerX - size/2, centerY);
+    ctx.lineTo(centerX + size/2, centerY);
+    ctx.stroke();
+    
+    // Vertical line
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY - size/2);
+    ctx.lineTo(centerX, centerY + size/2);
+    ctx.stroke();
 }
 
 export function drawArms(ctx, player, canvas) {
