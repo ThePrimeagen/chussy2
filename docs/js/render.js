@@ -16,7 +16,8 @@ export function drawWalls(ctx, player, canvas) {
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
         const distance = castRay(rayAngle, player.x, player.y);
-        const wallHeight = canvas.height / distance;
+        // Scale wall height by distance and FOV
+        const wallHeight = (canvas.height / distance) * (Math.cos(rayAngle - player.angle));
         
         // Solid dark red walls with no transparency
         ctx.fillStyle = '#8B2500';  // Dark red walls
