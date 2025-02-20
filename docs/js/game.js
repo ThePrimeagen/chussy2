@@ -222,18 +222,7 @@ setInterval(() => {
     }
 }, 5000);
 
-// Preload enemy sprites and bullet sprite
-Object.keys(GAME_CONFIG.SPRITES.ENEMIES).forEach(async (spriteName) => {
-    try {
-        spriteCache[spriteName] = await loadSprite(spriteName);
-    } catch (error) {
-        console.error(`Failed to load sprite ${spriteName}:`, error);
-    }
-});
-
-
-
-// Preload enemy sprites before starting game
+// Preload sprites before starting game
 async function initGame() {
     try {
         const spritePromises = [
