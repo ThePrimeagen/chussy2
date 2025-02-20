@@ -25,7 +25,7 @@ Time to make those enemies even more EPIC! 💪
 * Giving enemies CHAD ARMS to show their true strength
 * Using bold fonts and contrasting colors for maximum readability
 
-## Debug Minimap Implementation (2025-02-20 02:12:56 UTC)
+## Debug Minimap Implementation (2025-02-20 02:13:35 UTC)
 Added a powerful debug minimap to track all game elements! 🎮
 * Positioned in top-right corner for easy visibility
 * Player shown as red square for instant recognition
@@ -33,5 +33,16 @@ Added a powerful debug minimap to track all game elements! 🎮
 * Wall bounds drawn with orange lines for map layout
 * Real-time updates for accurate position tracking
 * Proper scaling to maintain map proportions
+
+```
+Debug Minimap Layout:
+┌────────────────┐
+│ ▓▓▓▓    ▓▓▓▓  │  Legend:
+│   P     E     │  P = Player (🟥)
+│ ▓▓▓▓    ▓▓▓▓  │  E = Enemy  (🟨)
+│        E      │  ▓ = Walls  (orange)
+│ ▓▓▓▓    ▓▓▓▓  │
+└────────────────┘
+```
 
 Let's make this codebase even more awesome together! 🍥
