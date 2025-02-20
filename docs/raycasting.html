@@ -46,6 +46,22 @@
             text-shadow: 0 0 10px #ff0000;
             z-index: 2;
         }
+    .ceo-approval {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 2;
+            text-align: center;
+            color: #ff4400;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        .ceo-approval img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid #ff4400;
+            box-shadow: 0 0 10px #ff0000;
+        }
     </style>
 </head>
 <body>
@@ -53,6 +69,10 @@
     <div class="flame-container" id="flameContainer"></div>
     <canvas id="gameCanvas"></canvas>
     <iframe width="0" height="0" src="https://www.youtube.com/embed/y6120QOlsfU?autoplay=1" allow="autoplay" style="position: fixed; bottom: 0; right: 0; opacity: 0.1;"></iframe>
+    <div class="ceo-approval">
+        <p>I approve of this webpage</p>
+        <img src="https://avatars.githubusercontent.com/u/4442245" alt="ThePrimeagen CEO">
+    </div>
     <script>
         // Game state
         const state = {
