@@ -26,8 +26,8 @@ export function drawWalls(ctx, player, canvas) {
         
         // Use cool colors for walls with better depth perception
         const baseIntensity = Math.min(255, (400/distance));
-        const wallColor = `rgb(${baseIntensity * 0.4}, ${baseIntensity * 0.5}, ${baseIntensity * 0.7})`;
-        const outlineColor = `rgb(${baseIntensity * 0.3}, ${baseIntensity * 0.4}, ${baseIntensity * 0.6})`;
+        const wallColor = `rgb(${baseIntensity * 0.8}, ${baseIntensity * 0.4}, ${baseIntensity * 0.6})`;
+        const outlineColor = `rgb(${baseIntensity * 0.6}, ${baseIntensity * 0.3}, ${baseIntensity * 0.5})`;
         
         // Draw wall with outline for depth
         ctx.fillStyle = wallColor;
