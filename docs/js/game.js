@@ -43,6 +43,11 @@ function initializeCanvases() {
     }
 }
 
+// Add FPS limiting constants
+const TARGET_FPS = 30;
+const FRAME_TIME = 1000 / TARGET_FPS;
+let lastFrameTime = 0;
+
 export const state = {
     projectiles: [],
     enemies: [],
@@ -92,31 +97,37 @@ export function restartGame() {
     requestAnimationFrame(gameLoop);
 }
 
-export function gameLoop() {
+export function gameLoop(timestamp) {
     if (state.gameOver) return;
+    
+    // Limit FPS
+    const elapsed = timestamp - lastFrameTime;
+    if (elapsed < FRAME_TIME) {
+        requestAnimationFrame(gameLoop);
+        return;
+    }
+    lastFrameTime = timestamp;
     
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Draw walls first (behind enemies)
+    // Cache array checks
+    const hasEnemies = state.enemies && Array.isArray(state.enemies);
+    
     drawWalls(ctx, player, canvas);
     
-    // Draw enemies on top of walls
-    if (state.enemies && Array.isArray(state.enemies)) {
+    if (hasEnemies) {
         state.enemies.forEach(enemy => {
             renderEnemy(ctx, enemy, player, canvas);
         });
     }
     
-    // Check for player death
     if (state.player.health <= 0) {
         handlePlayerDeath();
+        return;
     }
     
-    // Draw player arms
     drawArms(ctx, player, canvas);
-    
-    // Draw HUD
     drawHUD(ctx, state);
     
     // Update arm swing animation
@@ -124,13 +135,13 @@ export function gameLoop() {
         player.arms.swingOffset += player.arms.swingSpeed;
     }
     
-    // Update game state
     updatePlayerMovement(keys);
-    updateEnemies(state, player);
+    if (hasEnemies) {
+        updateEnemies(state, player);
+    }
     updateCollectibles(state, player);
     updateAutoplay(state, player);
     
-    // Draw minimap
     drawMinimap(minimapCtx, state, player);
     
     requestAnimationFrame(gameLoop);
@@ -143,9 +154,10 @@ setupInputHandlers(state);
 // Spawn initial cheese
 spawnCheese(state);
 
-// Spawn enemies periodically in center
+// Cache enemy check and reduce spawn frequency
+const MAX_ENEMIES = 5;
 setInterval(() => {
-    if (!state.enemies || !Array.isArray(state.enemies) || state.enemies.length < 5) {
+    if (!state.enemies?.length || state.enemies.length < MAX_ENEMIES) {
         spawnEnemy(state);
     }
 }, 5000);
