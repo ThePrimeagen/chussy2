@@ -42,8 +42,8 @@ export function drawWalls(ctx, player, canvas) {
         { hue: 300, sat: 70, light: 50 }   // Purple
     ];
     
-    // Cache time calculation
-    const timeOffset = Math.floor(Date.now() * 0.001) % colorMaps.length;
+    // Reuse timeOffset for color cycling
+    timeOffset = Math.floor(Date.now() * 0.001) % colorMaps.length;
     
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
