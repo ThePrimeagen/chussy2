@@ -68,16 +68,26 @@
     <h1 class="game-title">🔥 CHUSSY DEEZ NUTS INFERNO 3D 🔥</h1>
     <div class="flame-container" id="flameContainer"></div>
     <canvas id="gameCanvas"></canvas>
-    <iframe width="0" height="0" src="https://www.youtube.com/embed/y6120QOlsfU?autoplay=1" allow="autoplay" style="position: fixed; bottom: 0; right: 0; opacity: 0.1;"></iframe>
     <div class="ceo-approval">
         <p>I approve of this webpage</p>
         <img src="https://avatars.githubusercontent.com/u/4442245" alt="ThePrimeagen CEO">
     </div>
     <script>
+        // Key state tracking
+        const keys = {
+            w: false,
+            s: false,
+            a: false,
+            d: false,
+            ' ': false
+        };
+
         // Game state
         const state = {
             projectiles: [],
-            enemies: []
+            enemies: [],
+            lastShot: 0,
+            shootCooldown: 250 // milliseconds
         };
 
         // Map data
@@ -143,16 +153,41 @@
 
         // Shooting mechanics
         function shoot() {
-            state.projectiles.push({
-                x: player.x,
-                y: player.y,
-                angle: player.angle,
-                speed: 0.5
-            });
+            const now = Date.now();
+            if (now - state.lastShot >= state.shootCooldown) {
+                state.projectiles.push({
+                    x: player.x,
+                    y: player.y,
+                    angle: player.angle,
+                    speed: 0.5
+                });
+                state.lastShot = now;
+            }
         }
 
         // Update projectiles and enemies
         function updateEntities() {
+            // Handle continuous movement
+            if (keys.w) {
+                player.x += Math.cos(player.angle) * player.speed;
+                player.y += Math.sin(player.angle) * player.speed;
+            }
+            if (keys.s) {
+                player.x -= Math.cos(player.angle) * player.speed;
+                player.y -= Math.sin(player.angle) * player.speed;
+            }
+            if (keys.a) {
+                player.angle -= 0.1;
+            }
+            if (keys.d) {
+                player.angle += 0.1;
+            }
+
+            // Handle shooting
+            if (keys[' ']) {
+                shoot();
+            }
+
             // Update projectiles
             for (let i = state.projectiles.length - 1; i >= 0; i--) {
                 const proj = state.projectiles[i];
@@ -228,24 +263,14 @@
         setInterval(createFlame, 500);
 
         document.addEventListener('keydown', (e) => {
-            switch(e.key) {
-                case 'w':
-                    player.x += Math.cos(player.angle) * player.speed;
-                    player.y += Math.sin(player.angle) * player.speed;
-                    break;
-                case 's':
-                    player.x -= Math.cos(player.angle) * player.speed;
-                    player.y -= Math.sin(player.angle) * player.speed;
-                    break;
-                case 'a':
-                    player.angle -= 0.1;
-                    break;
-                case 'd':
-                    player.angle += 0.1;
-                    break;
-                case ' ':
-                    shoot();
-                    break;
+            if (e.key in keys) {
+                keys[e.key] = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key in keys) {
+                keys[e.key] = false;
             }
         });
 
