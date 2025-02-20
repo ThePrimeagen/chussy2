@@ -22,12 +22,16 @@
             border-radius: 1rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
         .banana {
             font-size: 8rem;
             position: relative;
             display: inline-block;
             cursor: pointer;
-            transition: transform 0.3s;
+            animation: float 3s ease-in-out infinite;
         }
         .banana:hover {
             transform: scale(1.1);
@@ -40,10 +44,12 @@
             left: 50%;
             transform: translate(-50%, -50%);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .banana.pregnant::after {
             opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+            animation: float 2s ease-in-out infinite;
         }
     </style>
 </head>
