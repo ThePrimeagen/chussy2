@@ -42,7 +42,7 @@ export function drawWalls(ctx, player, canvas) {
         { hue: 300, sat: 70, light: 50 }   // Purple
     ];
     
-    // Calculate color cycling offset
+    // Calculate color cycling offset for this frame
     const colorCycleOffset = Math.floor(Date.now() * 0.001) % colorMaps.length;
     
     for (let i = 0; i < numRays; i++) {
