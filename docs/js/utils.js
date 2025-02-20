@@ -15,6 +15,11 @@ export const GAME_CONFIG = {
         GUNSHOT: 'data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'
     },
     SPRITES: {
+        COLLECTIBLES: {
+            CHEESE_1: { src: 'sprites/cheese_1.png', width: 32, height: 32 },
+            CHEESE_2: { src: 'sprites/cheese_2.png', width: 32, height: 32 },
+            CHEESE_3: { src: 'sprites/cheese_3.png', width: 32, height: 32 }
+        },
         ENEMIES: {
             ANIME_GIRL_1: { src: 'sprites/anime_girl_1.png', width: 64, height: 64 },
             ANIME_GIRL_2: { src: 'sprites/anime_girl_2.png', width: 64, height: 64 },
