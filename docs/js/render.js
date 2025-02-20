@@ -75,8 +75,7 @@ export function drawMinimap(minimapCtx, state, player) {
     for (let y = 0; y < MAP.length; y++) {
         for (let x = 0; x < MAP[y].length; x++) {
             if (MAP[y][x] === 1) {
-                const hue = (Date.now() * 0.1 + (x + y) * 10) % 360;
-                ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
+                ctx.fillStyle = '#8090a0';  // Soothing blue-gray to match main view
                 ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
         }
