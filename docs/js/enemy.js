@@ -22,9 +22,9 @@ export function spawnEnemy(state, playerX, playerY) {
     }
     
     let x, y;
-    const MIN_WALL_DISTANCE = 2.0;  // Increased minimum wall distance
-    const MIN_PLAYER_DISTANCE = 4.0; // Minimum distance from player
-    const MAX_PLAYER_DISTANCE = 8.0; // Maximum distance from player
+    const MIN_WALL_DISTANCE = 2.0;  // Keep corridor width consistent
+    const MIN_PLAYER_DISTANCE = 4.0; // Keep minimum engagement distance
+    const MAX_PLAYER_DISTANCE = 12.0; // Increased to match new map dimensions
     let attempts = 0;
     const maxAttempts = 20;  // Increased max attempts
     
