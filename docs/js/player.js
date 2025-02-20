@@ -6,7 +6,11 @@ export const player = {
     y: 1.5,
     angle: 0,
     fov: GAME_CONFIG.FOV,
-    speed: GAME_CONFIG.PLAYER_SPEED * 0.5,  // Reduced movement speed for better control
+    speed: GAME_CONFIG.PLAYER_SPEED * 0.5,
+    turnSpeed: 0.05,
+    velocity: { x: 0, y: 0 },
+    acceleration: 0.01,
+    friction: 0.9,
     health: 100,
     maxHealth: 100,
     arms: {
