@@ -7,10 +7,10 @@ export const player = {
     angle: 0,
     fov: GAME_CONFIG.FOV,
     speed: GAME_CONFIG.PLAYER_SPEED * 0.3, // Reduced movement speed
-    turnSpeed: 0.075,  // Increased by 1.5x
+    turnSpeed: 0.15,  // Doubled for faster turning
     rotationVelocity: 0,
-    rotationAcceleration: 0.008, // Increased for snappier rotation
-    rotationFriction: 0.7,
+    rotationAcceleration: 0.016, // Doubled for even snappier rotation
+    rotationFriction: 0.8,  // Increased for better control
     velocity: { x: 0, y: 0 },
     acceleration: 0.005, // Reduced for slower movement
     friction: 0.92, // Increased friction to slow movement
