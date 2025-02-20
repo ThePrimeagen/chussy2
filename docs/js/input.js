@@ -18,7 +18,7 @@ export function createFlame() {
     flame.addEventListener('animationend', () => flame.remove());
 }
 
-export function updateAutoplay(state, player) {
+export async function updateAutoplay(state, player) {
     const now = Date.now();
     
     if (!state.autoplay.enabled && now - state.autoplay.lastActivity > state.autoplay.inactivityThreshold) {
@@ -29,8 +29,14 @@ export function updateAutoplay(state, player) {
     }
     
     if (state.autoplay.enabled && now - state.autoplay.lastPing >= state.autoplay.pingInterval) {
-        state.sounds.ping.play().catch(e => console.log('Audio play failed:', e));
-        state.autoplay.lastPing = now;
+        try {
+            await state.sounds.ping.play();
+            state.autoplay.lastPing = now;
+        } catch (error) {
+            console.error('Audio playback failed:', error);
+            // Continue without audio rather than breaking gameplay
+            state.autoplay.lastPing = now;
+        }
     }
 
     if (state.autoplay.enabled) {
