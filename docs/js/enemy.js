@@ -19,8 +19,10 @@ export function spawnEnemy(state, playerX, playerY) {
         x: x,
         y: y,
         health: 100,
-        type: 'chad',
-        lastMove: Date.now()
+        type: `ANIME_GIRL_${Math.floor(Math.random() * 10) + 1}`,
+        lastMove: Date.now(),
+        frame: 0,
+        animationSpeed: 0.1
     });
 }
 
