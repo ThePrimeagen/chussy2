@@ -10,12 +10,16 @@ export function drawWalls(ctx, player, canvas) {
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Improved wall visibility with stronger contrast
+        // Add wall outline for better visibility
         const baseIntensity = Math.min(255, (400/distance));
-        const redIntensity = baseIntensity;
-        const otherColors = baseIntensity * 0.6;  // Reduce other colors for better contrast
-        ctx.fillStyle = `rgb(${redIntensity}, ${otherColors}, ${otherColors})`;
+        const wallColor = `rgb(${baseIntensity}, ${baseIntensity * 0.6}, ${baseIntensity * 0.6})`;
+        const outlineColor = `rgb(${baseIntensity * 0.7}, ${baseIntensity * 0.4}, ${baseIntensity * 0.4})`;
+        
+        // Draw wall with outline
+        ctx.fillStyle = wallColor;
         ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
+        ctx.strokeStyle = outlineColor;
+        ctx.strokeRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
     }
 }
 
