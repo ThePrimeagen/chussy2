@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Full-Screen Iframe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+    }
+    iframe {
+      display: block;
+      width: 100%; height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <iframe
+    id="myFrame"
+    allow="accelerometer; camera; microphone; geolocation; autoplay; 
+           clipboard-read; clipboard-write; encrypted-media; display-capture;"
+    allowfullscreen>
+  </iframe>
+
+  <script>
+    const IFRAME_SRC = "index.html";
+    let lastInputTime = Date.now();
+    const frame = document.getElementById('myFrame');
+
+    frame.src = IFRAME_SRC;
+
+    // Reset timer on common interaction events.
+    ['mousemove','mousedown','keydown','wheel','touchstart'].forEach(evt => {
+      window.addEventListener(evt, () => {
+        lastInputTime = Date.now();
+      }, true);
+    });
+
+    // Check every 10s; if >60s no interaction, refresh the iframe.
+    setInterval(() => {
+      if (Date.now() - lastInputTime > 60_000) {
+        frame.src = IFRAME_SRC; // Refresh
+        lastInputTime = Date.now();
+      }
+    }, 10_000);
+  </script>
+</body>
+</html>
