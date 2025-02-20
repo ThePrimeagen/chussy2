@@ -1,6 +1,6 @@
 // Game Configuration
 export const GAME_CONFIG = {
-    MAP_SIZE: { width: 32, height: 32 },
+    MAP_SIZE: { width: 64, height: 64 },
     TILE_SIZE: 32,
     PLAYER_SPEED: 0.0035,  // *WHIRR* PRECISE MOVEMENT ENGAGED! 🤖
     ENEMY_SPEED: 2,
