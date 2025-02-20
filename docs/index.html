@@ -450,38 +450,6 @@
             });
         }
 
-        function handlePlayerDeath() {
-            // Show death popup
-            const popup = document.getElementById('deathPopup');
-            if (popup) {
-                popup.style.display = 'block';
-            }
-            // Stop game loop
-            state.gameOver = true;
-        }
-
-        function restartGame() {
-            // Reset player
-            state.player.health = state.player.maxHealth;
-            state.player.x = 1.5;
-            state.player.y = 1.5;
-            state.player.angle = 0;
-            
-            // Clear enemies
-            state.enemies = [];
-            
-            // Hide death popup
-            const popup = document.getElementById('deathPopup');
-            if (popup) {
-                popup.style.display = 'none';
-            }
-            
-            // Resume game
-            state.gameOver = false;
-            requestAnimationFrame(drawFrame);
-        }
-
-
         function drawFrame() {
             // Don't update if game is over
             if (state.gameOver) return;
