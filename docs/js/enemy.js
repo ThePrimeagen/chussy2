@@ -69,15 +69,15 @@ export function updateEnemies(state, player) {
                 continue;
             }
             
-            // Update pathfinding every 500ms
+            // Update pathfinding more frequently for smoother movement
             const now = Date.now();
-            if (now - enemy.lastPathUpdate > 500) {
+            if (now - enemy.lastPathUpdate > 100) { // Reduced from 500ms to 100ms
                 enemy.path = findPath(enemy.x, enemy.y, player.x, player.y);
                 enemy.lastPathUpdate = now;
                 enemy.pathIndex = 0;
             }
             
-            // Follow path if available
+            // Follow path if available with improved movement
             if (enemy.path && enemy.path.length > 0 && enemy.pathIndex < enemy.path.length) {
                 const target = enemy.path[enemy.pathIndex];
                 const tdx = target.x - enemy.x;
@@ -87,12 +87,22 @@ export function updateEnemies(state, player) {
                 if (tdist < 0.1) {
                     enemy.pathIndex++;
                 } else {
-                    const newX = enemy.x + (tdx / tdist) * 0.003;
-                    const newY = enemy.y + (tdy / tdist) * 0.003;
+                    // Smoother movement with proper collision radius
+                    const speed = 0.003;
+                    const newX = enemy.x + (tdx / tdist) * speed;
+                    const newY = enemy.y + (tdy / tdist) * speed;
                     
-                    if (!checkWallCollision(newX, newY)) {
+                    // Check collision with entity radius
+                    if (!checkWallCollision(newX, newY, 0.3)) {
                         enemy.x = newX;
                         enemy.y = newY;
+                    } else {
+                        // Try sliding along walls if direct path is blocked
+                        if (!checkWallCollision(newX, enemy.y, 0.3)) {
+                            enemy.x = newX;
+                        } else if (!checkWallCollision(enemy.x, newY, 0.3)) {
+                            enemy.y = newY;
+                        }
                     }
                 }
             }
