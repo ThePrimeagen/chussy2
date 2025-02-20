@@ -1,5 +1,5 @@
-import { GAME_CONFIG, spriteCache } from './utils.js';
-import { checkWallCollision } from './map.js';
+import { GAME_CONFIG } from './utils.js';
+import { checkWallCollision, MAP } from './map.js';
 import { calculateDistance, worldToScreen } from './utils.js';
 
 export function spawnEnemy(state, playerX, playerY) {
@@ -152,24 +152,19 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     // Draw enemy sprite
     ctx.save();
     
-    const sprite = spriteCache[enemy.type];
-    if (sprite) {
-        // Draw sprite with proper scaling
-        const height = size * 1.5; // Taller than walls for visibility
-        const width = height * (sprite.width / sprite.height);
-        
-        ctx.drawImage(
-            sprite,
-            screenX - width/2,
-            screenY - height/2,
-            width,
-            height
-        );
-        
-        // Add subtle glow effect for visibility
-        ctx.shadowColor = 'rgba(255, 255, 255, 0.3)';
-        ctx.shadowBlur = 20;
-    }
+    // KAWAII MODE ACTIVATED! *BEEP BOOP* 
+    const animeEmojis = ['(づ˶•༝•˶)づ♡', '(◕‿◕✿)', '(≧◡≦)', '(★ω★)', '(✿◠‿◠)'];
+    const emoji = animeEmojis[Math.floor(enemy.type.slice(-1))%5];
+    
+    ctx.font = `${size}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#FF69B4';  // Hot pink for maximum kawaii! *WHIRR*
+    ctx.fillText(emoji, screenX, screenY);
+    
+    // Add kawaii glow effect! ✨
+    ctx.shadowColor = 'rgba(255, 192, 203, 0.5)';
+    ctx.shadowBlur = 20;
     
     ctx.restore();
     

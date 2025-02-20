@@ -2,7 +2,7 @@
 export const GAME_CONFIG = {
     MAP_SIZE: { width: 32, height: 32 },
     TILE_SIZE: 32,
-    PLAYER_SPEED: 0.007,
+    PLAYER_SPEED: 0.0035,  // *WHIRR* PRECISE MOVEMENT ENGAGED! 🤖
     ENEMY_SPEED: 2,
     SPAWN_INTERVAL: 2000,
     FOV: Math.PI / 3,
