@@ -1,4 +1,4 @@
-import { GAME_CONFIG, loadSprite, calculateDistance, worldToScreen } from './utils.js';
+import { GAME_CONFIG, loadSprite, calculateDistance, worldToScreen, spriteCache } from './utils.js';
 import { player, updatePlayerMovement, shoot } from './player.js';
 import { updateEnemies, renderEnemy, spawnEnemy } from './enemy.js';
 import { updateCollectibles, renderCollectibles, spawnCheese } from './collectibles.js';
@@ -222,13 +222,20 @@ setInterval(() => {
     }
 }, 5000);
 
-// Preload enemy sprites
+// Preload enemy sprites and bullet sprite
 Object.keys(GAME_CONFIG.SPRITES.ENEMIES).forEach(async (spriteName) => {
     try {
-        await loadSprite(spriteName);
+        spriteCache[spriteName] = await loadSprite(spriteName);
     } catch (error) {
         console.error(`Failed to load sprite ${spriteName}:`, error);
     }
+});
+
+// Load bullet sprite
+loadSprite('BULLET').then(sprite => {
+    spriteCache['BULLET'] = sprite;
+}).catch(error => {
+    console.error('Failed to load bullet sprite:', error);
 });
 
 // Preload enemy sprites before starting game
