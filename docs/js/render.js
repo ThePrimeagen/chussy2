@@ -24,11 +24,20 @@ export function drawWalls(ctx, player, canvas) {
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Rainbow colors based on time and position
-        const hue = (Date.now() * 0.1 + i * 0.5) % 360;
-        const baseIntensity = Math.min(100, (400/distance));
-        const wallColor = `hsl(${hue}, 70%, ${baseIntensity}%)`;
-        const outlineColor = `hsl(${hue}, 70%, ${baseIntensity * 0.8}%)`;
+        // Random colormap with animation
+        const timeOffset = Date.now() * 0.001;
+        const colorIndex = Math.floor((i + timeOffset * 50) % 5);
+        const colorMaps = [
+            [255, 0, 0],   // Red
+            [0, 255, 0],   // Green
+            [0, 0, 255],   // Blue
+            [255, 255, 0], // Yellow
+            [255, 0, 255]  // Magenta
+        ];
+        const baseColor = colorMaps[colorIndex];
+        const intensity = Math.min(1, 400/distance);
+        const wallColor = `rgb(${baseColor[0] * intensity}, ${baseColor[1] * intensity}, ${baseColor[2] * intensity})`;
+        const outlineColor = `rgb(${baseColor[0] * intensity * 0.8}, ${baseColor[1] * intensity * 0.8}, ${baseColor[2] * intensity * 0.8})`;
         
         // Draw wall with outline for depth
         ctx.fillStyle = wallColor;
