@@ -2,72 +2,31 @@ import { castRay, MAP } from './map.js';
 import { GAME_CONFIG } from './utils.js';
 
 export function drawWalls(ctx, player, canvas) {
-    // Elementary sky rendering with animated stars
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, '#000033');  // Deep space
-    gradient.addColorStop(0.3, '#000066'); // Upper atmosphere
-    gradient.addColorStop(0.5, '#0066cc'); // Horizon
-    ctx.fillStyle = gradient;
+    // Basic sky rendering without expensive gradients
+    ctx.fillStyle = '#000033';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Animate twinkling stars
-    const starCount = 100;
-    const starTime = Date.now() * 0.001;
-    for (let i = 0; i < starCount; i++) {
-        const x = Math.sin(i * 567.5) * canvas.width;
-        const y = Math.cos(i * 321.7) * canvas.height/2;
-        const twinkle = Math.sin(starTime + i * 0.5) * 0.5 + 0.5;
-        ctx.fillStyle = `rgba(255, 255, 255, ${twinkle * 0.8})`;
-        ctx.beginPath();
-        ctx.arc(x, y, 1, 0, Math.PI * 2);
-        ctx.fill();
-    }
-
-    // Enhanced floor with depth gradient
-    const floorGradient = ctx.createLinearGradient(0, canvas.height/2, 0, canvas.height);
-    floorGradient.addColorStop(0, '#666666');  // Far floor
-    floorGradient.addColorStop(1, '#333333');  // Near floor
-    ctx.fillStyle = floorGradient;
+    // Simplified floor
+    ctx.fillStyle = '#333333';
     ctx.fillRect(0, canvas.height/2, canvas.width, canvas.height/2);
 
     const numRays = canvas.width;
     const rayStep = player.fov / numRays;
-    
-    // Red brick wall texture effect
-    const brickColor = '#8B2500';  // Dark red for bricks
-    const mortarColor = '#808080';  // Gray for mortar
-    const brickHeight = 20;  // Height of each brick row
-    const brickWidth = 40;   // Width of each brick
-    
-    // Pre-calculate brick pattern
-    let wallColors = Array(numRays).fill().map((_, i) => {
-        const row = Math.floor((i / brickWidth)) % 2;
-        const isMortar = (i % brickWidth < 2) || (Math.floor(i / brickHeight) % brickHeight < 2);
-        // Offset every other row by half a brick
-        const offsetX = row * (brickWidth / 2);
-        const adjustedI = (i + offsetX) % brickWidth;
-        return (adjustedI < 2 || isMortar) ? mortarColor : brickColor;
-    });
+    const timestamp = Date.now() * 0.001;  // For wall rotation
     
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
-        const distance = castRay(rayAngle, player.x, player.y);
+        
+        // Add rotation to ray angle based on time
+        const rotatedAngle = rayAngle + timestamp * 2;  // Spin speed multiplier
+        
+        const distance = castRay(rotatedAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Draw brick wall with depth of field and shading
+        // Simple shading without expensive blur
         const shade = Math.max(0.4, 1 - distance / 15);
-        const color = wallColors[i];
-        if (color === mortarColor) {
-            ctx.fillStyle = `rgba(128, 128, 128, ${shade})`;
-        } else {
-            ctx.fillStyle = `rgba(139, 37, 0, ${shade})`;
-        }
-        
-        // Apply depth of field blur effect
-        const blurAmount = Math.min(5, Math.max(0, distance - 3) / 2);
-        ctx.filter = `blur(${blurAmount}px)`;
+        ctx.fillStyle = `rgba(139, 37, 0, ${shade})`;
         ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
-        ctx.filter = 'none';
     }
 }
 
@@ -91,17 +50,19 @@ export function drawArms(ctx, player, canvas) {
 
 export function drawMinimap(minimapCtx, state, player) {
     const ctx = minimapCtx;
-    // Clear minimap
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     
-    // Draw walls
     const tileSize = ctx.canvas.width / MAP[0].length;
+    const timestamp = Date.now() * 0.001;
+    
+    // Draw rotating walls
     for (let y = 0; y < MAP.length; y++) {
         for (let x = 0; x < MAP[y].length; x++) {
             if (MAP[y][x] === 1) {
-                const hue = (Date.now() * 0.1 + (x + y) * 10) % 360;
-                ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
+                // Rotate wall color based on time
+                const rotationColor = Math.sin(timestamp + x + y) * 127 + 128;
+                ctx.fillStyle = `rgb(${rotationColor}, 0, 0)`;
                 ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
         }
@@ -123,22 +84,14 @@ export function drawMinimap(minimapCtx, state, player) {
     );
     ctx.stroke();
     
-    // Draw enemies with depth of field
+    // Simplified enemy rendering without blur
     if (state.enemies && Array.isArray(state.enemies)) {
         state.enemies.forEach(enemy => {
             if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') return;
-            const dx = enemy.x - player.x;
-            const dy = enemy.y - player.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            // Enhanced depth of field effect for enemies
-            const blurAmount = Math.min(5, Math.max(0, distance - 2) / 2);
-            ctx.filter = `blur(${blurAmount}px)`;
             ctx.fillStyle = '#ff0000';
             ctx.beginPath();
             ctx.arc(enemy.x * tileSize, enemy.y * tileSize, tileSize/2, 0, Math.PI * 2);
             ctx.fill();
-            ctx.filter = 'none';
         });
     }
 }
