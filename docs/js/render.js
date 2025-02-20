@@ -2,14 +2,17 @@ import { castRay, MAP } from './map.js';
 import { GAME_CONFIG } from './utils.js';
 
 export function drawWalls(ctx, player, canvas) {
-    // Basic sky rendering without expensive gradients
-    ctx.fillStyle = '#000033';
+    // Dark environment
+    ctx.fillStyle = '#000022';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Simplified floor
-    ctx.fillStyle = '#333333';
+    // Darker floor for horror atmosphere
+    ctx.fillStyle = '#111111';
     ctx.fillRect(0, canvas.height/2, canvas.width, canvas.height/2);
 
+    // Add flickering effect
+    const flicker = Math.random() * 0.2 + 0.8;
+    
     const numRays = canvas.width;
     const rayStep = player.fov / numRays;
     
@@ -18,8 +21,8 @@ export function drawWalls(ctx, player, canvas) {
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Simple shading without expensive blur
-        const shade = Math.max(0.4, 1 - distance / 15);
+        // Dynamic shading with flicker
+        const shade = Math.max(0.2, (1 - distance / 15) * flicker);
         ctx.fillStyle = `rgba(139, 37, 0, ${shade})`;  // Dark red walls
         ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
     }
@@ -50,11 +53,13 @@ export function drawMinimap(minimapCtx, state, player) {
     
     const tileSize = ctx.canvas.width / MAP[0].length;
     
-    // Draw walls with consistent color
+    // Draw walls with dynamic lighting
+    const flicker = Math.random() * 0.2 + 0.8;
     for (let y = 0; y < MAP.length; y++) {
         for (let x = 0; x < MAP[y].length; x++) {
             if (MAP[y][x] === 1) {
-                ctx.fillStyle = '#8B2500';  // Dark red to match main view
+                const shade = Math.max(0.2, flicker);
+                ctx.fillStyle = `rgba(139, 37, 0, ${shade})`;  // Dark red with flicker
                 ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
         }
