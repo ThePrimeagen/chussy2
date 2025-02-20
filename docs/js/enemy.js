@@ -65,9 +65,10 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     const dy = enemy.y - player.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
     
-    // Convert world space to screen space
-    const angle = Math.atan2(dy, dx) - player.angle;
-    const screenX = (Math.tan(angle) + 1) * canvas.width / 2;
+    // Convert world space to screen space with correct camera alignment
+    const angle = Math.atan2(dy, dx);
+    const relativeAngle = ((angle - player.angle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+    const screenX = (Math.tan(relativeAngle) + 1) * canvas.width / 2;
     const screenY = canvas.height / 2;
     const size = canvas.height / distance;
     
