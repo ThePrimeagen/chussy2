@@ -169,6 +169,35 @@ export function gameLoop(timestamp) {
                     const width = Math.max(12, size * 0.6);  // Visible yellow bullets per ThePrimeagen
                     const height = width;
                     
+                    // Draw smoke tracer
+                    ctx.save();
+                    ctx.globalAlpha = 0.3;
+                    ctx.fillStyle = '#888888';
+                    ctx.beginPath();
+                    ctx.moveTo(screenX, screenY);
+                    ctx.lineTo(screenX - Math.cos(projectile.angle) * width * 2, 
+                             screenY - Math.sin(projectile.angle) * width * 2);
+                    ctx.lineTo(screenX - Math.cos(projectile.angle) * width * 3,
+                             screenY - Math.sin(projectile.angle) * width * 3);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                    
+                    // Draw yellow bullet
+                    // Draw smoke tracer
+                    ctx.save();
+                    ctx.globalAlpha = 0.3;
+                    ctx.fillStyle = '#888888';
+                    ctx.beginPath();
+                    ctx.moveTo(screenX, screenY);
+                    ctx.lineTo(screenX - Math.cos(projectile.angle) * width * 2, 
+                             screenY - Math.sin(projectile.angle) * width * 2);
+                    ctx.lineTo(screenX - Math.cos(projectile.angle) * width * 3,
+                             screenY - Math.sin(projectile.angle) * width * 3);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                    
                     // Draw yellow bullet
                     ctx.save();
                     ctx.fillStyle = 'yellow';
