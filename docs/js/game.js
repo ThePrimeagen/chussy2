@@ -138,5 +138,17 @@ Object.keys(GAME_CONFIG.SPRITES.ENEMIES).forEach(async (spriteName) => {
     }
 });
 
-// Start game loop
-gameLoop();
+// Preload enemy sprites before starting game
+async function initGame() {
+    try {
+        const spritePromises = Object.keys(GAME_CONFIG.SPRITES.ENEMIES).map(spriteName => loadSprite(spriteName));
+        await Promise.all(spritePromises);
+        console.log('All enemy sprites loaded successfully');
+        gameLoop();
+    } catch (error) {
+        console.error('Failed to load enemy sprites:', error);
+    }
+}
+
+// Initialize game
+initGame();
