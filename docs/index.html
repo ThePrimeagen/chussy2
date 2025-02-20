@@ -385,7 +385,51 @@
                     ctx.lineWidth = 3;
                     ctx.stroke();
                     
-                    // Draw enemy with thick outline
+                    // Draw CHAD ARMS
+                    const armWidth = 30;
+                    const armLength = 80;
+                    const flexAngle = Math.sin(Date.now() / 500) * 0.3; // Flexing animation
+                    
+                    // Left buff arm
+                    ctx.save();
+                    ctx.translate(enemy.x - 32, enemy.y);
+                    ctx.rotate(-Math.PI/4 + flexAngle);
+                    ctx.fillStyle = '#8B4513'; // Muscular brown color
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 4;
+                    
+                    // Bicep
+                    ctx.beginPath();
+                    ctx.ellipse(-20, 0, armWidth, armLength/2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Forearm
+                    ctx.beginPath();
+                    ctx.ellipse(-40, armLength/2, armWidth-10, armLength/3, flexAngle, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                    
+                    // Right buff arm
+                    ctx.save();
+                    ctx.translate(enemy.x + 32, enemy.y);
+                    ctx.rotate(Math.PI/4 - flexAngle);
+                    
+                    // Bicep
+                    ctx.beginPath();
+                    ctx.ellipse(20, 0, armWidth, armLength/2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Forearm
+                    ctx.beginPath();
+                    ctx.ellipse(40, armLength/2, armWidth-10, armLength/3, -flexAngle, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                    
+                    // Draw enemy body with thick outline
                     ctx.shadowBlur = 20;
                     ctx.strokeStyle = '#ff0000';
                     ctx.lineWidth = 6;
