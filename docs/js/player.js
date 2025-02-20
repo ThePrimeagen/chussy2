@@ -20,28 +20,35 @@ export const player = {
 };
 
 export function updatePlayerMovement(keys) {
+    // Apply acceleration based on input
     if (keys.w) {
-        const newX = player.x + Math.cos(player.angle) * player.speed;
-        const newY = player.y + Math.sin(player.angle) * player.speed;
-        if (!checkWallCollision(newX, newY)) {
-            player.x = newX;
-            player.y = newY;
-        }
+        player.velocity.x += Math.cos(player.angle) * player.acceleration;
+        player.velocity.y += Math.sin(player.angle) * player.acceleration;
     }
     if (keys.s) {
-        const newX = player.x - Math.cos(player.angle) * player.speed;
-        const newY = player.y - Math.sin(player.angle) * player.speed;
-        if (!checkWallCollision(newX, newY)) {
-            player.x = newX;
-            player.y = newY;
-        }
+        player.velocity.x -= Math.cos(player.angle) * player.acceleration;
+        player.velocity.y -= Math.sin(player.angle) * player.acceleration;
     }
-    if (keys.a) {
-        player.angle -= 0.05;  // Reduced turn sensitivity
+    
+    // Apply friction
+    player.velocity.x *= player.friction;
+    player.velocity.y *= player.friction;
+    
+    // Update position with collision check
+    const newX = player.x + player.velocity.x;
+    const newY = player.y + player.velocity.y;
+    if (!checkWallCollision(newX, newY)) {
+        player.x = newX;
+        player.y = newY;
+    } else {
+        // Reset velocity on collision
+        player.velocity.x = 0;
+        player.velocity.y = 0;
     }
-    if (keys.d) {
-        player.angle += 0.05;  // Reduced turn sensitivity
-    }
+    
+    // Smoother turning
+    if (keys.a) player.angle -= player.turnSpeed;
+    if (keys.d) player.angle += player.turnSpeed;
 }
 
 export function shoot(state) {
