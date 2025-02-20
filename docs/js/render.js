@@ -18,9 +18,8 @@ export function drawWalls(ctx, player, canvas) {
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
-        // Simple shading without expensive blur
-        const shade = Math.max(0.4, 1 - distance / 15);
-        ctx.fillStyle = `rgba(139, 37, 0, ${shade})`;  // Dark red walls
+        // Solid dark red walls with no transparency
+        ctx.fillStyle = '#8B2500';  // Dark red walls
         ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
     }
 }
@@ -54,7 +53,7 @@ export function drawMinimap(minimapCtx, state, player) {
     for (let y = 0; y < MAP.length; y++) {
         for (let x = 0; x < MAP[y].length; x++) {
             if (MAP[y][x] === 1) {
-                ctx.fillStyle = '#8B2500';  // Dark red to match main view
+                ctx.fillStyle = '#8B2500';  // Solid dark red walls
                 ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
         }
