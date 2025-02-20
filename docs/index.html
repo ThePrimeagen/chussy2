@@ -46,6 +46,16 @@
             text-shadow: 0 0 10px #ff0000;
             z-index: 2;
         }
+        .minimap {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 200px;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ff4400;
+            z-index: 3;
+        }
     .ceo-approval {
             position: fixed;
             bottom: 20px;
@@ -102,6 +112,7 @@
     <h1 class="game-title">🔥 CHUSSY DEEZ PIEROGI INFERNO 3D 🔥</h1>
     <div class="flame-container" id="flameContainer"></div>
     <canvas id="gameCanvas"></canvas>
+    <canvas id="minimapCanvas" class="minimap"></canvas>
     <div class="ceo-approval">
         <p>ThePrimeagen approves of this game</p>
         <img src="https://avatars.githubusercontent.com/u/4442245" alt="ThePrimeagen CEO">
