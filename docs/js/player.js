@@ -50,8 +50,17 @@ export function updatePlayerMovement(keys) {
     }
     
     // Smoother turning
-    if (keys.a) player.angle -= player.turnSpeed;
-    if (keys.d) player.angle += player.turnSpeed;
+    // Apply rotation acceleration
+    if (keys.a) {
+        player.rotationVelocity -= player.rotationAcceleration;
+    }
+    if (keys.d) {
+        player.rotationVelocity += player.rotationAcceleration;
+    }
+    
+    // Apply rotation friction
+    player.rotationVelocity *= player.rotationFriction;
+    player.angle += player.rotationVelocity;
 }
 
 export function shoot(state) {
