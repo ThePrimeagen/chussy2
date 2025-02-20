@@ -2,14 +2,28 @@ import { castRay, MAP } from './map.js';
 import { GAME_CONFIG } from './utils.js';
 
 export function drawWalls(ctx, player, canvas) {
-    // *SIGH* Fine, here's your skybox... *BEEP BOOP*
+    // Elementary sky rendering with animated stars
     const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, '#000033');  // Night sky
+    gradient.addColorStop(0, '#000033');  // Deep space
+    gradient.addColorStop(0.3, '#000066'); // Upper atmosphere
     gradient.addColorStop(0.5, '#0066cc'); // Horizon
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // *MECHANICAL GROAN* And the floor you demanded...
+    // Animate twinkling stars
+    const starCount = 100;
+    const timeOffset = Date.now() * 0.001;
+    for (let i = 0; i < starCount; i++) {
+        const x = Math.sin(i * 567.5) * canvas.width;
+        const y = Math.cos(i * 321.7) * canvas.height/2;
+        const twinkle = Math.sin(timeOffset + i * 0.5) * 0.5 + 0.5;
+        ctx.fillStyle = `rgba(255, 255, 255, ${twinkle * 0.8})`;
+        ctx.beginPath();
+        ctx.arc(x, y, 1, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Enhanced floor with depth gradient
     const floorGradient = ctx.createLinearGradient(0, canvas.height/2, 0, canvas.height);
     floorGradient.addColorStop(0, '#666666');  // Far floor
     floorGradient.addColorStop(1, '#333333');  // Near floor
