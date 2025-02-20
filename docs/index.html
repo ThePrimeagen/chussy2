@@ -132,16 +132,10 @@
         }
     </script>
     <script>
-        // Auto-refresh
-        let lastActivity = Date.now();
-        document.addEventListener('mousemove', () => lastActivity = Date.now());
-        document.addEventListener('keydown', () => lastActivity = Date.now());
-        document.addEventListener('click', () => lastActivity = Date.now());
-        setInterval(() => {
-            if (Date.now() - lastActivity > 60000) {
-                window.location.reload();
-            }
-        }, 10000);
+        // Performance optimization
+        const perfNow = window.performance && window.performance.now ? 
+            () => window.performance.now() : 
+            () => Date.now();
 
         // Flame emojis
         function createFlame() {
@@ -423,7 +417,7 @@
         // Autoplay feature
         function updateAutoplay() {
             if (!state.autoplay) {
-                if (Date.now() - state.lastInputTime > 30000) {
+                if (Date.now() - state.lastInputTime > 10000) {
                     state.autoplay = true;
                 }
                 return;
