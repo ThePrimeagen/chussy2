@@ -166,7 +166,7 @@ export function gameLoop(timestamp) {
                 ctx.save();
                 const sprite = spriteCache['BULLET'];
                 if (sprite) {
-                    const width = Math.max(16, size * 1.5);  // Bigger bullets
+                    const width = Math.max(8, size * 0.75);  // Smaller bullets per ThePrimeagen
                     const height = width;
                     ctx.drawImage(
                         sprite,
