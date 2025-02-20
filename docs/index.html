@@ -4,97 +4,21 @@
     <meta charset="utf-8">
     <title>Chussy Inferno 3D</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Wingdings&display=swap');
         body { 
-            margin: 0;
-            background: url('https://media.giphy.com/media/sDcfxFDozb3bO/giphy.gif');
-            background-size: cover;
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            grid-template-rows: auto 1fr auto;
-            min-height: 100vh;
+            margin: 0; 
+            background: #000;
             overflow: hidden;
         }
-        .flame-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .flame {
-            position: absolute;
-            font-size: 24px;
-            animation: fall linear infinite;
-        }
-        @keyframes fall {
-            from { transform: translateY(-20px); }
-            to { transform: translateY(100vh); }
-        }
-        .game-title {
-            font-family: 'Wingdings', cursive;
-            color: #ff4400;
-            font-size: 48px;
-            text-align: center;
-            margin: 10px 0;
-            text-shadow: 0 0 10px #ff0000;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            background: rgba(0,0,0,0.8);
-            padding: 10px;
-        }
-        }
-        #gameContainer {
-            position: relative;
-            width: 800px;
-            height: 600px;
-            margin-top: 20px;
-        }
-        #gameCanvas {
-            border: 2px solid #333;
-            image-rendering: pixelated;
-        }
-        #adContainer {
-            width: 728px;
-            height: 90px;
-            margin: 10px auto;
-            background: #1a1a1a;
-        }
-        .shop-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 8px 16px;
-            background: #ff4444;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Press Start 2P', cursive;
+        canvas { 
+            width: 100vw;
+            height: 100vh;
         }
     </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOURPUBID"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="adContainer">
-        <div class="funny-ad" style="background: #2a2a2a; color: #fff; padding: 10px; text-align: center; font-family: 'Comic Sans MS', cursive;">
-            <h3>🧀 PREMIUM CHEESE DLC 🧀</h3>
-            <p>Unlock Golden Gouda Projectiles!</p>
-            <p>Only 9999 coins!</p>
-            <button onclick="alert('Nice try! Keep playing to earn coins!')" style="background: #ff4444; border: none; padding: 5px 10px; color: white; cursor: pointer;">BUY NOW!</button>
-        </div>
-    </div>
-    <h1 class="game-title">🔥 CHUSSY DEEZ NUTS INFERNO 3D 🔥</h1>
-    <div class="flame-container" id="flameContainer"></div>
-    <div id="gameContainer" style="grid-column: 3 / 11; grid-row: 2;">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <button class="shop-button" onclick="openShop()">SHOP</button>
-    </div>
+    <canvas id="gameCanvas"></canvas>
     <!-- IE Compatibility polyfills -->
     <script>
         if (!window.requestAnimationFrame) {
@@ -110,20 +34,105 @@
             };
         }
     </script>
-    <script src="game.js"></script>
-    <script src="autoplay.js"></script>
-    <script src="refresh.js"></script>
-    <script src="tests.js"></script>
+    <script>
+        // Game state
+        const state = {
+            projectiles: [],
+            enemies: []
+        };
 
-    <div style="position: fixed; bottom: 10px; width: 100%; text-align: center; color: #666; font-family: Arial;">
-        Compatible with Internet Explorer and modern browsers
-    </div>
-    <div style="position: fixed; bottom: 0; width: 100%; background: linear-gradient(45deg, #ff4444, #ff8844); padding: 10px; text-align: center; font-family: 'Comic Sans MS', cursive; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); z-index: 1000;">
-        <a href="https://terminal.shop" style="color: white; text-decoration: none; font-size: 24px;">
-            ✨ terminal.shop: now serving uWu girls as well ✨
-        </a>
-    </div>
-    <script src="flames.js"></script>
-    <iframe width="0" height="0" src="https://www.youtube.com/embed/y6120QOlsfU?autoplay=1" allow="autoplay" style="position: fixed; bottom: 0; right: 0; opacity: 0.1;"></iframe>
+        // Map data
+        const MAP = [
+            [1,1,1,1,1,1,1,1],
+            [1,0,0,0,0,0,0,1],
+            [1,0,1,0,0,1,0,1],
+            [1,0,0,0,0,0,0,1],
+            [1,0,1,0,0,1,0,1],
+            [1,0,0,0,0,0,0,1],
+            [1,0,1,0,0,1,0,1],
+            [1,1,1,1,1,1,1,1]
+        ];
+
+        // Player state
+        const player = {
+            x: 1.5,
+            y: 1.5,
+            angle: 0,
+            fov: Math.PI / 3,
+            speed: 0.1
+        };
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Raycasting
+        function castRay(rayAngle) {
+            let rayX = player.x;
+            let rayY = player.y;
+            let rayDirX = Math.cos(rayAngle);
+            let rayDirY = Math.sin(rayAngle);
+            
+            let distance = 0;
+            while (distance < 20) {
+                rayX += rayDirX * 0.1;
+                rayY += rayDirY * 0.1;
+                distance += 0.1;
+                
+                let mapX = Math.floor(rayX);
+                let mapY = Math.floor(rayY);
+                
+                if (MAP[mapY] && MAP[mapY][mapX] === 1) {
+                    return distance;
+                }
+            }
+            return distance;
+        }
+
+        function drawFrame() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const numRays = canvas.width;
+            const rayStep = player.fov / numRays;
+            
+            for (let i = 0; i < numRays; i++) {
+                const rayAngle = player.angle - player.fov/2 + rayStep * i;
+                const distance = castRay(rayAngle);
+                const wallHeight = canvas.height / distance;
+                
+                ctx.fillStyle = `rgb(${255/distance}, ${255/distance}, ${255/distance})`;
+                ctx.fillRect(i, (canvas.height-wallHeight)/2, 1, wallHeight);
+            }
+            
+            requestAnimationFrame(drawFrame);
+        }
+
+        // Input handling
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'w':
+                    player.x += Math.cos(player.angle) * player.speed;
+                    player.y += Math.sin(player.angle) * player.speed;
+                    break;
+                case 's':
+                    player.x -= Math.cos(player.angle) * player.speed;
+                    player.y -= Math.sin(player.angle) * player.speed;
+                    break;
+                case 'a':
+                    player.angle -= 0.1;
+                    break;
+                case 'd':
+                    player.angle += 0.1;
+                    break;
+                case ' ':
+                    // Shooting mechanic
+                    break;
+            }
+        });
+
+        drawFrame();
+    </script>
 </body>
 </html>
