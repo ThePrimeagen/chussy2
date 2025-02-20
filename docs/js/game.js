@@ -1,6 +1,7 @@
-import { GAME_CONFIG } from './utils.js';
+import { GAME_CONFIG, loadSprite } from './utils.js';
 import { player, updatePlayerMovement, shoot } from './player.js';
 import { updateEnemies, renderEnemy, spawnEnemy } from './enemy.js';
+import { updateCollectibles, renderCollectibles, spawnCheese } from './collectibles.js';
 import { drawWalls, drawHUD, drawArms, drawMinimap } from './render.js';
 import { setupInputHandlers, keys, updateAutoplay } from './input.js';
 
@@ -127,6 +128,15 @@ setInterval(() => {
         spawnEnemy(state, player.x, player.y);
     }
 }, 5000);
+
+// Preload enemy sprites
+Object.keys(GAME_CONFIG.SPRITES.ENEMIES).forEach(async (spriteName) => {
+    try {
+        await loadSprite(spriteName);
+    } catch (error) {
+        console.error(`Failed to load sprite ${spriteName}:`, error);
+    }
+});
 
 // Start game loop
 gameLoop();
