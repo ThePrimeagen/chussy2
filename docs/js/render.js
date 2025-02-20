@@ -52,7 +52,7 @@ export function drawMinimap(minimapCtx, state, player) {
     for (let y = 0; y < MAP.length; y++) {
         for (let x = 0; x < MAP[y].length; x++) {
             if (MAP[y][x] === 1) {
-                ctx.fillStyle = '#ff4400';
+                ctx.fillStyle = '#4466aa';
                 ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
         }
