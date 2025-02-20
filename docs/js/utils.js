@@ -25,7 +25,8 @@ export const GAME_CONFIG = {
             ENEMY_2: { src: 'resources/sprites/ships_packed.png', x: 32, y: 0, width: 32, height: 32 },
             ENEMY_3: { src: 'resources/sprites/ships_packed.png', x: 64, y: 0, width: 32, height: 32 },
             ENEMY_4: { src: 'resources/sprites/ships_packed.png', x: 96, y: 0, width: 32, height: 32 },
-            ENEMY_5: { src: 'resources/sprites/ships_packed.png', x: 128, y: 0, width: 32, height: 32 }
+            ENEMY_5: { src: 'resources/sprites/ships_packed.png', x: 128, y: 0, width: 32, height: 32 },
+            CHEESE_ENEMY: { src: 'sprites/cheese_1.png', width: 32, height: 32 }
         }
     }
 };

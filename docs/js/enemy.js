@@ -36,11 +36,12 @@ export function spawnEnemy(state) {
             x: x,
             y: y,
             health: 100,
-            type: 'ENEMY_1',
+            type: 'CHEESE_ENEMY',
             lastMove: Date.now(),
             lastPathUpdate: 0,
             pathIndex: 0,
-            path: null
+            path: null,
+            clicked: false
         });
     }
 }
@@ -99,11 +100,36 @@ export function renderEnemy(ctx, enemy, player, canvas) {
     // Skip if outside view
     if (screenX < -size || screenX > canvas.width + size) return;
     
-    // Draw simple enemy shape
+    // Draw enemy
     ctx.save();
-    ctx.fillStyle = '#ff0000';
-    ctx.beginPath();
-    ctx.arc(screenX, screenY, size/4, 0, Math.PI * 2);
-    ctx.fill();
+    
+    // Draw cheese enemy with health bar
+    if (enemy.type === 'CHEESE_ENEMY') {
+        // Draw health bar
+        const barWidth = size;
+        const barHeight = size / 8;
+        const healthPercent = enemy.health / 100;
+        
+        // Health bar background
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(screenX - barWidth/2, screenY - size/2 - barHeight*2, barWidth, barHeight);
+        
+        // Health bar fill
+        ctx.fillStyle = '#00ff00';
+        ctx.fillRect(screenX - barWidth/2, screenY - size/2 - barHeight*2, barWidth * healthPercent, barHeight);
+        
+        // Draw cheese enemy
+        ctx.fillStyle = '#ffd700';
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, size/3, 0, Math.PI * 2);
+        ctx.fill();
+    } else {
+        // Draw default enemy shape
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, size/4, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
     ctx.restore();
 }

@@ -2,6 +2,10 @@ import { castRay, MAP } from './map.js';
 import { GAME_CONFIG } from './utils.js';
 
 export function drawWalls(ctx, player, canvas) {
+    // Cache shared time calculation for all animations
+    const currentTime = Date.now() * 0.001;
+    const colorTime = Math.floor(currentTime);
+    
     // Elementary sky rendering with animated stars
     const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
     gradient.addColorStop(0, '#000033');  // Deep space
@@ -12,11 +16,10 @@ export function drawWalls(ctx, player, canvas) {
 
     // Animate twinkling stars
     const starCount = 100;
-    const timeOffset = Date.now() * 0.001;
     for (let i = 0; i < starCount; i++) {
         const x = Math.sin(i * 567.5) * canvas.width;
         const y = Math.cos(i * 321.7) * canvas.height/2;
-        const twinkle = Math.sin(timeOffset + i * 0.5) * 0.5 + 0.5;
+        const twinkle = Math.sin(currentTime + i * 0.5) * 0.5 + 0.5;
         ctx.fillStyle = `rgba(255, 255, 255, ${twinkle * 0.8})`;
         ctx.beginPath();
         ctx.arc(x, y, 1, 0, Math.PI * 2);
@@ -42,16 +45,13 @@ export function drawWalls(ctx, player, canvas) {
         { hue: 300, sat: 70, light: 50 }   // Purple
     ];
     
-    // Cache time calculation
-    const timeOffset = Math.floor(Date.now() * 0.001) % colorMaps.length;
-    
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
         const distance = castRay(rayAngle, player.x, player.y);
         const wallHeight = canvas.height / distance;
         
         // Use pre-calculated colors with smooth transitions
-        const colorIndex = (timeOffset + Math.floor(i / (numRays / colorMaps.length))) % colorMaps.length;
+        const colorIndex = (colorTime + Math.floor(i / (numRays / colorMaps.length))) % colorMaps.length;
         const color = colorMaps[colorIndex];
         const intensity = Math.min(100, (400/distance));
         const wallColor = `hsl(${color.hue}, ${color.sat}%, ${intensity}%)`;
@@ -94,7 +94,7 @@ export function drawMinimap(minimapCtx, state, player) {
     for (let y = 0; y < MAP.length; y++) {
         for (let x = 0; x < MAP[y].length; x++) {
             if (MAP[y][x] === 1) {
-                const hue = (Date.now() * 0.1 + (x + y) * 10) % 360;
+                const hue = (currentTime * 100 + (x + y) * 10) % 360;
                 ctx.fillStyle = `hsl(${hue}, 70%, 50%)`;
                 ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
