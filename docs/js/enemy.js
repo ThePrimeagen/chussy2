@@ -1,4 +1,4 @@
-import { GAME_CONFIG } from './utils.js';
+import { GAME_CONFIG, spriteCache } from './utils.js';
 import { checkWallCollision } from './map.js';
 import { calculateDistance, worldToScreen } from './utils.js';
 
