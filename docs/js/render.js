@@ -12,11 +12,11 @@ export function drawWalls(ctx, player, canvas) {
 
     // Animate twinkling stars
     const starCount = 100;
-    let timeOffset = Date.now() * 0.001;
+    const starTime = Date.now() * 0.001;
     for (let i = 0; i < starCount; i++) {
         const x = Math.sin(i * 567.5) * canvas.width;
         const y = Math.cos(i * 321.7) * canvas.height/2;
-        const twinkle = Math.sin(timeOffset + i * 0.5) * 0.5 + 0.5;
+        const twinkle = Math.sin(starTime + i * 0.5) * 0.5 + 0.5;
         ctx.fillStyle = `rgba(255, 255, 255, ${twinkle * 0.8})`;
         ctx.beginPath();
         ctx.arc(x, y, 1, 0, Math.PI * 2);
@@ -42,8 +42,8 @@ export function drawWalls(ctx, player, canvas) {
         { hue: 300, sat: 70, light: 50 }   // Purple
     ];
     
-    // Reuse timeOffset for color cycling
-    timeOffset = Math.floor(Date.now() * 0.001) % colorMaps.length;
+    // Calculate color cycling time
+    const colorTime = Math.floor(Date.now() * 0.001) % colorMaps.length;
     
     for (let i = 0; i < numRays; i++) {
         const rayAngle = player.angle - player.fov/2 + rayStep * i;
@@ -51,7 +51,7 @@ export function drawWalls(ctx, player, canvas) {
         const wallHeight = canvas.height / distance;
         
         // Use pre-calculated colors with smooth transitions
-        const colorIndex = (timeOffset + Math.floor(i / (numRays / colorMaps.length))) % colorMaps.length;
+        const colorIndex = (colorTime + Math.floor(i / (numRays / colorMaps.length))) % colorMaps.length;
         const color = colorMaps[colorIndex];
         const intensity = Math.min(100, (400/distance));
         const wallColor = `hsl(${color.hue}, ${color.sat}%, ${intensity}%)`;
