@@ -72,9 +72,9 @@ export function shoot(state) {
             x: player.x + Math.cos(player.angle) * bulletDistance,
             y: player.y + Math.sin(player.angle) * bulletDistance,
             angle: player.angle,
-            speed: 0.3,  // Fast enough for good gameplay
-            damage: 20,
-            lifetime: 1000,  // 1 second lifetime
+            speed: 0.15,  // Slower bullets for better gameplay
+            damage: 25,    // Increased damage to compensate
+            lifetime: 2000,  // 2 second lifetime for longer travel
             created: now
         });
         state.lastShot = now;
