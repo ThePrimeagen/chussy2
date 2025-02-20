@@ -21,11 +21,14 @@ export const GAME_CONFIG = {
             CHEESE_3: { src: 'resources/sprites/ships_packed.png', x: 320, y: 0, width: 32, height: 32 }
         },
         ENEMIES: {
-            ENEMY_1: { src: 'resources/sprites/ships_packed.png', x: 0, y: 0, width: 32, height: 32 },
-            ENEMY_2: { src: 'resources/sprites/ships_packed.png', x: 32, y: 0, width: 32, height: 32 },
-            ENEMY_3: { src: 'resources/sprites/ships_packed.png', x: 64, y: 0, width: 32, height: 32 },
-            ENEMY_4: { src: 'resources/sprites/ships_packed.png', x: 96, y: 0, width: 32, height: 32 },
-            ENEMY_5: { src: 'resources/sprites/ships_packed.png', x: 128, y: 0, width: 32, height: 32 }
+            ENEMY_1: { src: 'resources/sprites/anime_girls.png', x: 0, y: 0, width: 32, height: 32 },
+            ENEMY_2: { src: 'resources/sprites/anime_girls.png', x: 32, y: 0, width: 32, height: 32 },
+            ENEMY_3: { src: 'resources/sprites/anime_girls.png', x: 64, y: 0, width: 32, height: 32 },
+            ENEMY_4: { src: 'resources/sprites/anime_girls.png', x: 96, y: 0, width: 32, height: 32 },
+            ENEMY_5: { src: 'resources/sprites/anime_girls.png', x: 128, y: 0, width: 32, height: 32 },
+            ENEMY_6: { src: 'resources/sprites/anime_girls.png', x: 160, y: 0, width: 32, height: 32 },
+            ENEMY_7: { src: 'resources/sprites/anime_girls.png', x: 192, y: 0, width: 32, height: 32 },
+            ENEMY_8: { src: 'resources/sprites/anime_girls.png', x: 224, y: 0, width: 32, height: 32 }
         },
         BULLET: { src: 'resources/sprites/ships_packed.png', x: 192, y: 0, width: 16, height: 16, color: 'yellow' },
         TARGET: { src: 'resources/sprites/ships_packed.png', x: 224, y: 0, width: 32, height: 32 }
