@@ -154,12 +154,24 @@
         gameLoop();
     </script>
     <script>
-        // Rainbow div effects (ThePrimeagen approved)
-        const rand = () => Math.floor(Math.random() * 256)
-        const r = () => (`rgb(${rand()}, ${rand()}, ${rand()})`)
-        const divs = document.querySelectorAll('div')
-        const viewDestroy = () => divs.forEach(d => d.style.background = r())
-        setInterval(viewDestroy, 100)
+        // Gentle color transitions every 30 seconds for better a11y
+        const colors = [
+            '#f0f0f0', // Light gray
+            '#e8e8e8', // Slightly darker gray
+            '#f5f5f5', // Almost white
+            '#ececec'  // Another gentle gray
+        ];
+        let colorIndex = 0;
+        const transitionDiv = () => {
+            const divs = document.querySelectorAll('div');
+            divs.forEach(d => {
+                d.style.transition = 'background-color 5s ease';
+                d.style.backgroundColor = colors[colorIndex];
+            });
+            colorIndex = (colorIndex + 1) % colors.length;
+        };
+        transitionDiv(); // Initial color
+        setInterval(transitionDiv, 30000); // Change every 30 seconds
     </script>
 </body>
 </html>
